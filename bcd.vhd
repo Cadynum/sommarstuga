@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 
 
 package bcd is
-	function tobcd  (din : in unsigned) return std_logic_vector;
+	function tobcd (din : in unsigned) return std_logic_vector;
 end package;
 
 package body bcd is
@@ -15,7 +15,6 @@ package body bcd is
 		variable bcd : std_logic_vector(chunks*4-1 downto 0) := (others => '0');
 		variable tmp : unsigned(3 downto 0);
 	begin
-		report "Number of cycles taken = " & integer'image(bits);
 		for b in bits-1 downto 0 loop
 			for i in 0 to chunks-1 loop
 				tmp := unsigned( bcd((i+1)*4-1 downto i*4) );
@@ -27,5 +26,5 @@ package body bcd is
 		end loop;
 		return bcd;
 	end function;
- 
+
 end package body;
