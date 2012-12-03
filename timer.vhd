@@ -13,7 +13,7 @@ end entity;
 
 architecture a of timer is
 	constant cnt_max : positive := clkfreq/interrupt-1;
-	signal cnt : positive range 0 to cnt_max := 0;
+	signal cnt : integer range 0 to cnt_max := 0;
 	signal active : boolean;
 begin
 	active <= cnt = cnt_max;
