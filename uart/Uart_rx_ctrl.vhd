@@ -1,3 +1,7 @@
+
+-- Uart receive module
+--******************************************************
+
 LIBRARY work;
 USE work.defs.all;
 
@@ -10,9 +14,9 @@ use IEEE.STD_LOGIC_ARITH.all;
 entity Uart_rx_ctrl is
 	Port(clk : in  STD_LOGIC;
 	     rst : in  STD_LOGIC;
-	     rx : in  STD_LOGIC;
-	     byteOut : out  STD_LOGIC_VECTOR(7 downTo 0);
-	     byteReady : out STD_LOGIC);
+	     rx : in  STD_LOGIC;                          -- Serial line in.
+	     byteOut : out  STD_LOGIC_VECTOR(7 downTo 0); -- The byte read sromt the serial line.
+	     byteReady : out STD_LOGIC);                  -- Goes high when byteOut is valid.
 end Uart_rx_ctrl;
 
 --******************************************************

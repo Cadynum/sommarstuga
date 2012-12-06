@@ -2,17 +2,21 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
 
+-- ********************************************************************************
+-- Definitions file
+-- Contains the divisors used for the baud speed syncronizing.
+--
+-- ********************************************************************************
+
 package Defs is
 	type CHAR_ARRAY is array (integer range<>) of std_logic_vector(7 downto 0);
 
-	constant one_sec_div : UNSIGNED (26 downTo 0) := "101111101011110000100000000";
+	constant baud_1      : UNSIGNED (26 downTo 0) := "101111101011110000100000000";
 	constant baud_9600   : UNSIGNED (26 downTo 0) := "000000000000010100010110000";
-								       
 	constant baud_19200  : UNSIGNED (26 downTo 0) := "000000000000001010001011000"; -- 9600 / 2
 	constant baud_76800  : UNSIGNED (26 downTo 0) := "000000000000000010100010110"; -- 9600 / 8 = 1302
-	constant baud_x      : UNSIGNED (26 downTo 0) := "000000000000000000000000010";
-	constant C0_27       : UNSIGNED (26 downto 0) := "000000000000000000000000000"; -- zero
-	constant C1_27       : UNSIGNED (26 downto 0) := "000000000000000000000000001"; -- one	
+
+-- ********************************************************************************
 -- type <new_type> is
 --  record
 --    <type_name>        : std_logic_vector( 7 downto 0);

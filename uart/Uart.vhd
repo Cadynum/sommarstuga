@@ -5,7 +5,6 @@ use IEEE.std_logic_unsigned.all;
 use IEEE.STD_LOGIC_ARITH.all;
 
 LIBRARY work;
-
 USE work.defs.all;
 
 --******************************************************
@@ -26,55 +25,37 @@ end Uart;
 --******************************************************
 
 architecture Behavioral of Uart is
-	signal tmpRxByte : STD_LOGIC_VECTOR(7 downTo 0) := "00011000";
-	signal tmpRxReady : STD_LOGIC;
-	
 	component Uart_rx_ctrl is
 		Port(clk : in  STD_LOGIC;
 		     rst : in  STD_LOGIC;
 		     rx : in  STD_LOGIC;
-		     byteOut : out  STD_LOGIC_VECTOR(7 downTo 0);
-		     byteReady : out STD_LOGIC);
+		     byteOut : out  STD_LOGIC_VECTOR(7 downTo 0);  -- Byte received on the serial line. Only valid when byteReady is high.
+		     byteReady : out STD_LOGIC);                   -- Goes high after a byte is received and the byte value is valid.
 	end component;
 
-	component UART_TX_CTRL is
-		Port ( SEND : in  STD_LOGIC;
-		   DATA : in  STD_LOGIC_VECTOR (7 downto 0);
-		   CLK : in  STD_LOGIC;
-		   READY : out  STD_LOGIC;
-		   UART_TX : out  STD_LOGIC);
+	component Uart_tx_ctrl is
+		Port(send : in  STD_LOGIC;
+		   data : in  STD_LOGIC_VECTOR (7 downto 0);
+		   clk : in  STD_LOGIC;
+		   ready : out  STD_LOGIC;
+		   uart_tx : out  STD_LOGIC);
 	end component;
 
 --******************************************************
 
 begin
-	rxReady <= tmpRxReady;
-
 	txControl : UART_TX_CTRL port map(
 		SEND => txSend,
 		DATA => txByte,
-
 		CLK => clk,
 		READY => txReady,
-
 		UART_TX => tx);
 		
 	rxControl : Uart_rx_ctrl port map(
 		clk => clk,
 		rst => rst,
 		rx => rx,
-		byteOut  => tmpRxByte,
-		byteReady => tmpRxReady);
-
-	P0 : process(clk, rst)
-	begin
-		if(rising_edge(clk)) then
-			if(rst = '1') then
-				rxByte <= "10000001";
-			elsif(tmpRxReady = '1') then
-				rxByte <= tmpRxByte;
-			end if;
-		end if;
-	end process;
+		byteOut  => rxByte,
+		byteReady => rxReady);
 
 end Behavioral;
