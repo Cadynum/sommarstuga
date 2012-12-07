@@ -11,7 +11,7 @@ end Shift_register;
 --********************************************************
 
 architecture Behavioral of Shift_register is
-	signal reg : STD_LOGIC_VECTOR (7 downTo 0);
+	signal reg : STD_LOGIC_VECTOR (7 downTo 0) := (others=>'0');
 begin
 	Shift_process : process (clk)
 	begin

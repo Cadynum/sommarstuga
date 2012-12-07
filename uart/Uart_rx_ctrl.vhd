@@ -24,10 +24,10 @@ end Uart_rx_ctrl;
 architecture Behavioral of Uart_rx_ctrl is
 	type State_type is (IDLE, START, RECEIVE, STOP, READY);
 
-	signal baudTiming, shift, sync, toggle : STD_LOGIC := '0';
+	signal timing, shift, sync, toggle : STD_LOGIC := '0';
 	signal state, nextState : State_type := IDLE;
-	signal divisor : UNSIGNED(26 downTo 0);
-	signal bitIndex : natural := 0;
+	signal divisor : UNSIGNED(26 downTo 0) := baud_76800;
+	signal bitIndex : UNSIGNED(2 downTo 0) := "000";
 	signal i : UNSIGNED (26 downto 0) := (others => '0');
 
 	component Shift_register is
@@ -46,6 +46,20 @@ begin
 		serialIn => rx,
 		byteOut => byteOut);
 	
+	shift <= '1' when (timing = '1' AND state = RECEIVE) else '0';
+	byteReady <= '1' when (state = READY) else '0';
+
+	with state select
+	divisor <= baud_76800 when IDLE,
+		   baud_76800 when READY,
+		   baud_19200 when START,
+		   baud_9600 when others; --RECEIVE and START
+
+	with state select
+	sync <= '0' when START,
+		'0' when STOP,
+		'1' when others; -- IDLE, RECEIVE and READY
+
 	P0 : process(clk, rst)
 	begin
 		if rst = '1' then
@@ -55,45 +69,33 @@ begin
 		end if;
 	end process;
 
-	shift <= '1' when (baudTiming = '1' AND state = RECEIVE) else '0';
-	byteReady <= '1' when (state = READY) else '0';
-	divisor <= baud_76800 when (state = IDLE OR state = READY) else 
-		   baud_9600 when (state = RECEIVE OR state = STOP) else
-		   baud_19200 when (state = START);
-
-	sync <= '1' when state = IDLE else
-		'0' when state = START else
-		'1' when state = RECEIVE else
-		'0' when state = STOP else
-		'1' when state = READY;
-
-	P1 : process(clk, state, rx, baudTiming, bitIndex)
+	P1 : process(clk, state, rx, timing, bitIndex)
 	begin
 		if(rising_edge(clk)) then
-			if(baudTiming = '1') then
-				if(state = RECEIVE) then
-					bitIndex <= bitIndex + 1;
-
-					if(bitIndex = 7) then
-						bitIndex <= 0;
-						nextState <= STOP;
-					end if;
-				elsif(state = IDLE) then
-					if (rx = '0') then nextState <= START; 
-					end if;
-				elsif(state = START) then
-					if (rx = '0') then nextState <= RECEIVE; 
-					end if;
-				elsif(state = STOP) then
-					if (rx = '1') then
-						nextState <= READY;
-					else 
-						nextState <= IDLE;
-					end if;
-				elsif(state = READY) then
-					if (rx = '0') then nextState <= START;
-					end if;
-				end if;
+			if(timing = '1') then
+				case state is
+					when RECEIVE =>
+						bitIndex <= bitIndex + 1;
+						if(bitIndex = 7) then
+							bitIndex <= "000";
+							nextState <= STOP;
+						end if;
+					when IDLE =>
+						if (rx = '0') then nextState <= START; 
+						end if;
+					when START =>
+						if (rx = '0') then nextState <= RECEIVE; 
+						end if;
+					when STOP =>
+						if (rx = '1') then
+							nextState <= READY;
+						else 
+							nextState <= IDLE;
+						end if;
+					when READY =>
+						if (rx = '0') then nextState <= START;
+						end if;
+				end case;
 			end if;
 		end if;
 	end process;
@@ -105,15 +107,14 @@ begin
 				i <= (others => '0');	
 				toggle <= not(toggle);
 
-			elsif (baudTiming = '1') then
+			elsif (timing = '1') then
 				i <= (others => '0');
 			else
 				i <= i + 1;
 			end if;
 		end if;
-	end process;
-	
-	baudTiming <= '1' when (i = divisor) else '0';
+	end process;	
+	timing <= '1' when (i = divisor) else '0';
 
 end Behavioral;
 

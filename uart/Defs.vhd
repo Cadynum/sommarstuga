@@ -11,7 +11,7 @@ use IEEE.STD_LOGIC_ARITH.all;
 package Defs is
 	type CHAR_ARRAY is array (integer range<>) of std_logic_vector(7 downto 0);
 
-	constant baud_1      : UNSIGNED (26 downTo 0) := "101111101011110000100000000";
+	constant baud_1      : UNSIGNED (26 downTo 0) := "101111101011110000100000000";-- 1 sec
 	constant baud_9600   : UNSIGNED (26 downTo 0) := "000000000000010100010110000";
 	constant baud_19200  : UNSIGNED (26 downTo 0) := "000000000000001010001011000"; -- 9600 / 2
 	constant baud_76800  : UNSIGNED (26 downTo 0) := "000000000000000010100010110"; -- 9600 / 8 = 1302
