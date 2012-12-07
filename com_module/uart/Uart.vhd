@@ -1,8 +1,7 @@
 --******************************************************
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.std_logic_unsigned.all;
-use IEEE.STD_LOGIC_ARITH.all;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 LIBRARY work;
 USE work.defs.all;
@@ -10,6 +9,7 @@ USE work.defs.all;
 --******************************************************
 
 entity Uart is
+	generic (baudRate : POSITIVE := 9600); -- **implement**
 	Port (clk : in  STD_LOGIC;			   -- clock
 	      rst : in STD_LOGIC;			   -- reset
 	      rx : in  STD_LOGIC;			   -- receive serial line

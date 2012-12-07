@@ -50,14 +50,12 @@ begin
 	byteReady <= '1' when (state = READY) else '0';
 
 	with state select
-	divisor <= baud_76800 when IDLE,
-		   baud_76800 when READY,
+	divisor <= baud_76800 when IDLE | READY,
 		   baud_19200 when START,
 		   baud_9600 when others; --RECEIVE and START
 
 	with state select
-	sync <= '0' when START,
-		'0' when STOP,
+	sync <= '0' when START | STOP,
 		'1' when others; -- IDLE, RECEIVE and READY
 
 	P0 : process(clk, rst)
