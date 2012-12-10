@@ -48,6 +48,11 @@ begin
                  comHasElemStatus,
                  elemStatusNowOnDb)
     begin
+        tempNowOnDb <= '0';
+        comWantTemp <= '0';
+        comWantElemStatus <= '0'
+        comHasElemStatus <= '0';
+        elemStatusNowOnDb <= '0';
         case currentState is
             when s0 => -- Kommunikation (Väntetillstånd)
                 if(comWantTemp = '1') then -- temperatur begärd.
@@ -65,7 +70,6 @@ begin
             
             when s1 => -- Temperatur
                 if(tempNowOnDb = '1') then
-                    tempPutTempOnDb <= '0';
                     comHasTempOnDb <= '1';
                     nextState <= s0;
                 else
@@ -74,7 +78,6 @@ begin
 
             when s2 => -- Element
                 if(elemStatusNowOnDb = '1') then
-                    elemPutStatusOnDb <= '0';
                     comHasElemStatusOnDb <= '1';
                     nextState <= s0;
                 else

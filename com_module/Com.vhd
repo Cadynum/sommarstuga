@@ -37,7 +37,7 @@ Architecture Behavioral of Com is
 	signal state : State_type;
 
 begin
-	comp_uart : entity work.uart generic map (baudrate => 9600) port map (clk => clk, rst => rst, 
+	comp_uart : entity work.uart generic map (baudrate => 9600) port map (clk => clk, rst => rst,
 									      txByte => byteOut, txSend => outByteReady, tx => tx,
 									      rx => rx, rxReady => inByteReady, rxByte => byteIn);
 	--comp_at : entity work.uart generic map (messageBufferSize => 80)

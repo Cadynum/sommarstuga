@@ -1,3 +1,3 @@
 restart -f -nowave
-add wave testOk
-run 3ms
+add wave clk rst enable readWrite sel memBus
+run 80ns
