@@ -1,0 +1,10 @@
+One control function command instructs the DS18S20 to perform a temperature measurement. The result
+of this measurement will be placed in the DS18S20’s scratch-pad memory, and may be read by issuing a
+memory function command which reads the contents of the scratchpad memory. The temperature alarm
+triggers TH and TL consist of 1-byte EEPROM each. If the alarm search command is not applied to the
+DS18S20, these registers may be used as general purpose user memory. Writing TH and TL is done
+using a memory function command. Read access to these registers is through the scratchpad. All data is
+read and written least significant bit first.
+
+
+The idle state for the 1–Wire bus is high.

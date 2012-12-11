@@ -1,0 +1,8 @@
+INTSTYLE=ise
+INFILE=/home/ojeling/sommarstuga/fpga_tempviewer_xilinx/fpga_tempviewer.ncd
+OUTFILE=/home/ojeling/sommarstuga/fpga_tempviewer_xilinx/fpga_tempviewer.bit
+FAMILY=Spartan6
+PART=xc6slx16-3csg324
+WORKINGDIR=/home/ojeling/sommarstuga/fpga_tempviewer_xilinx
+LICENSE=WebPack
+USER_INFO=209955005_0_0_738

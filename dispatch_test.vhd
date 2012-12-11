@@ -15,10 +15,8 @@ begin
 	entity work.dispatch port map
 		( clk => clk
 		, reset => reset
-		, led => open
 		, DQ => DQ
 		);
-
 
 
 	-- Simulate open drain with high pullup resistor

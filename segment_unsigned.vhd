@@ -6,8 +6,8 @@ use work.bcd.all;
 entity segment_unsigned is
 	port	( clk, reset : in std_ulogic
 			; raw : in unsigned(9 downto 0)
-			; an : out std_ulogic_vector(3 downto 0)
-			; segment : out std_ulogic_vector(7 downto 0)
+			; an : buffer std_ulogic_vector(3 downto 0)
+			; segment : buffer std_ulogic_vector(7 downto 0)
 			);
 end entity;
 
@@ -33,23 +33,26 @@ architecture a of segment_unsigned is
 
 
 	signal cnt : integer range 0 to 3 := 0;
-	signal pulse, dot : std_ulogic;
+	signal pulse : boolean;
 	signal bcd : std_ulogic_vector(4*4-1 downto 0);
 begin
 	-- 1khz refresh rate for each led segment
-	SEGMENT_TIMER:
-	entity work.timer generic map (interrupt => 10**3) port map (clk, reset, '0', pulse);
+	timer:
+	entity work.timer generic map (interrupt => 10**3) port map (clk, reset, false, pulse);
 
 	bcd <= tobcd(raw);
 
+	-- this generates an incorrect metastability warning
 	segment <= '1' & segarray(to_integer(bcddigit(bcd, cnt)));
+
 	an <= sel(cnt);
 
+	counter:
 	process (clk, reset) begin
 		if reset = '1' then
 			cnt <= 0;
 		elsif rising_edge(clk) then
-			if pulse = '1' then
+			if pulse then
 				cnt <= (cnt + 1) mod 4;
 			end if;
 		end if;

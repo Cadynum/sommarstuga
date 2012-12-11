@@ -1,6 +1,6 @@
 package onewire is
 	type control_t is (ctl_idle, ctl_read, ctl_write, ctl_reset);
-	subtype slot_t is integer range 0 to 127;
+	subtype slot_t is integer range 0 to 15;
 end package;
 
 
@@ -12,13 +12,13 @@ use work.onewire.all;
 
 entity onewire_proto is
 	port	( clk, reset : in std_ulogic
-			; ready : out std_ulogic
+			; ready : buffer std_ulogic
 			; control : in control_t
 			; write_bit : in std_ulogic
-			; read_bit : out std_ulogic
-			; sample_now : out std_ulogic
+			; read_bit, sample_now_d : buffer std_ulogic
 			; slot_max : in slot_t
-			; slot_cnt_o : out slot_t
+			; slot_cnt : buffer slot_t
+			; error : buffer std_ulogic
 			; DQ : inout std_logic
 			);
 end entity;
@@ -26,7 +26,17 @@ end entity;
 architecture a of onewire_proto is
 	-- // Constants. Times are in usec //
 	-- min: 480 max: 960
-	constant Treset_pulse : integer := 480;
+	constant Treset_pulse : integer := 500;
+
+	-- Longest time allowed for slave to aswers with a presence pulse
+	constant Tpresence_timeout : integer := 60;
+
+	constant Tpresence_min : integer := 60;
+	-- Longest allowed duration of response pulse plus 1
+	constant Tpresence_max : integer := 240;
+
+	--Smallest duration of presence operations
+	constant Tpostpresence : integer := Treset_pulse - Tpresence_min;
 
 
 	-- Write and read slots. Each slot have a >60usec duration, with >1usec
@@ -56,6 +66,7 @@ architecture a of onewire_proto is
 					, Spostreset
 					, Spresence1
 					, Spresence2
+					, Spostpresence
 					, Sready
 					, Swrite_init
 					, Swrite
@@ -66,16 +77,15 @@ architecture a of onewire_proto is
 					);
 
 	-- / Signals //
-	signal DQO : std_ulogic;
+	signal DQO, DQId, DQI : std_ulogic;
 	signal DQFlipFlop : std_ulogic := '1';
--- 	signal sample_now : std_logic;
 
 	signal state, next_state_signal : state_t;
 	signal reset_timer, pulse : boolean;
 
-	signal cnt : integer range 0 to 1023;
+	signal cnt : integer range 0 to 512-1;
 
-	signal slot_cnt : slot_t;
+	signal sample_now : std_ulogic;
 	signal slot_cnt_inc, slot_cnt_reset : boolean;
 begin
 	usec_timer:
@@ -110,25 +120,29 @@ begin
 
 
 	DQ <= '0' when DQFlipFlop = '0' else 'Z';
-	slot_cnt_o <= slot_cnt;
 
+	-- Flip flop input and output for glitch free operation.
 	process (clk, reset) begin
 		if reset = '1' then
 			state <= Sreset;
 			DQFlipFlop <= '1';
 		elsif rising_edge(clk) then
 			state <= next_state_signal;
-			if state = Sread then
-				read_bit <= DQ;
+			sample_now_d <= sample_now;
+			if sample_now = '1' then
+				read_bit <= DQI;
 			end if;
 			DQFlipFlop <= DQO;
+			DQId <= DQ;
+			DQI <= DQId;
 		end if;
 	end process;
 
 
-	process (cnt, slot_cnt, slot_max, DQ, state, write_bit, control, pulse) is
+	process (cnt, slot_cnt, slot_max, DQI, state, write_bit, control, pulse) is
 		variable next_state : state_t;
 	begin
+		error <= '0';
 		reset_timer <= false;
 		slot_cnt_reset <= false;
 		slot_cnt_inc <= false;
@@ -146,26 +160,37 @@ begin
 
 			-- wait for DQ to go high
 			when Spostreset =>
---					if cnt = postreset_time then
---						next_state := Spresence1;
---					end if;
 				reset_timer <= true;
-				if DQ = '1' then
+				if DQI = '1' then
 					next_state := Spresence1;
 				end if;
 
-			-- wait for the slave to start the precence pulse
+			-- wait for the slave to start the presence pulse
 			when Spresence1 =>
-				reset_timer <= true;
-				if DQ = '0' then
+				if DQI = '0' then
 					next_state := Spresence2;
+				elsif (cnt = Tpresence_timeout-1) and pulse then
+					next_state := Sreset;
+					error <= '1';
 				end if;
 
-			-- wait for the slave to finish the precence pulse
+			-- wait for the slave to finish the presence pulse
 			-- 107us for one sensor
 			when Spresence2 =>
-				reset_timer <= true;
-				if DQ = '1' then -- and.. just to be safe. remove later
+				if DQI = '1' then
+					if (cnt >= Tpresence_min-1) and pulse then
+						next_state := Spostpresence;
+					elsif pulse then
+						next_state := Sreset;
+						error <= '1';
+					end if;
+				elsif (cnt = Tpresence_max-1) and pulse then
+					next_state := Sreset;
+					error <= '1';
+				end if;
+
+			when Spostpresence =>
+				if (cnt = Tpostpresence-1) and pulse then
 					next_state := Sready;
 				end if;
 
@@ -184,7 +209,7 @@ begin
 			-- start a write slot by pulling the pin low
 			when Swrite_init =>
 				DQO <= '0';
-				if cnt = Twrite_init - 1 and pulse then
+				if (cnt = Twrite_init - 1) and pulse then
 					next_state := Swrite;
 				end if;
 
@@ -231,14 +256,11 @@ begin
 					end if;
 				end if;
 		end case;
+
 		-- Always reset the timer for the next state
 		if next_state /= state then
 			reset_timer <= true;
 		end if;
-		--avoid wasting one cycle
-		--if next_state = Sready then
-			--ready <= '1';
-		--end if;
 		next_state_signal <= next_state;
 	end process;
 

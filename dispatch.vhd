@@ -7,7 +7,7 @@ use work.onewire.all;
 entity dispatch is
 	port	( clk, reset : in std_ulogic
 			; DQ : inout std_logic
-			; led : buffer std_ulogic_vector(7 downto 0)
+			; temperature : buffer signed(7 downto 0) := (others => '0')
 			);
 end entity;
 
@@ -25,11 +25,11 @@ architecture a of dispatch is
 	constant readscratch : std_ulogic_vector(15 downto 0) := x"BECC";
 
 	signal control : control_t;
-	signal write_bit, read_bit, ready, sample_now : std_ulogic;
+	signal write_bit, read_bit, ready, sample_now, pushtemp, error : std_ulogic;
 	signal slot_max, slot_cnt : slot_t;
 	signal inbuf : std_ulogic_vector(7 downto 0) := x"00";
-	signal pushtemp : std_ulogic;
 begin
+
 
 
 	onewire_proto:
@@ -40,41 +40,34 @@ begin
 		, control => control
 		, write_bit => write_bit
 		, read_bit => read_bit
-		, sample_now => sample_now
+		, sample_now_d => sample_now
 		, slot_max => slot_max
-		, slot_cnt_o => slot_cnt
+		, slot_cnt => slot_cnt
 		, DQ => DQ
+		, error => error
 		);
 
 	process (clk, reset) begin
 		if reset = '1' then
 			state <= init1;
-			led <= (others => '0');
+			temperature <= (others => '0');
+			inbuf <= x"00";
 		elsif rising_edge(clk) then
 			state <= next_state;
 			if pushtemp = '1' then
-				led <= inbuf;
+				temperature <= signed(inbuf);
 			end if;
-		end if;
-	end process;
-
-	process (clk, reset) begin
-		if reset = '1' then
-			inbuf <= x"00";
-		elsif rising_edge(clk) then
 			if sample_now = '1' then
-				inbuf(slot_cnt) <= DQ;
+				inbuf(slot_cnt) <= read_bit;
 			end if;
 		end if;
 	end process;
-
-
 
 	process (state, ready, slot_cnt, inbuf) begin
 		control <= ctl_idle;
 		next_state <= state;
 		slot_max <= 0;
-		write_bit <= '0';
+		write_bit <= '-';
 		pushtemp <= '0';
 		case state is
 			when init1 =>

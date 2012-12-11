@@ -3,31 +3,29 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.bcd.all;
 
-entity temp_led is
-	port	( clk, reset : in std_logic
+entity segment_temperature is
+	port	( clk, reset : in std_ulogic
 			; rawd : in signed(7 downto 0)
-			; an : out std_logic_vector(3 downto 0)
-			; segment : out std_logic_vector(7 downto 0)
+			; an : buffer std_ulogic_vector(3 downto 0)
+			; segment : buffer std_ulogic_vector(7 downto 0)
 			);
 end entity;
 
 
-architecture a of temp_led is
-	subtype seg_t is std_logic_vector(6 downto 0);
+architecture a of segment_temperature is
+	subtype seg_t is std_ulogic_vector(6 downto 0);
 	type segarr_t is array (natural range <>) of seg_t;
-	
+
 	signal is_negative : boolean;
 	signal absolute : unsigned(rawd'range);
 	signal int_part : unsigned(rawd'high-1 downto 0);
-	signal fract_part : std_logic;
-
-	signal active : unsigned(3 downto 0);
+	signal fract_part : std_ulogic;
 
 	signal cnt : integer range 0 to 3;
-	signal cnt_raw : unsigned(1 downto 0);
-	
-	signal pulse, dot : std_logic;
-	signal bcd : std_logic_vector(3*4-1 downto 0);
+
+	signal pulse : boolean;
+	signal dot : std_ulogic;
+	signal bcd : std_ulogic_vector(3*4-1 downto 0);
 	signal digit : seg_t;
 
 
@@ -44,63 +42,56 @@ architecture a of temp_led is
 									, "0111111" -- minus sign
 									);
 
-	type sel_t is array (natural range <>) of std_logic_vector(3 downto 0);
+	type sel_t is array (natural range <>) of std_ulogic_vector(3 downto 0);
 	constant sel : sel_t := ("1110", "1101", "1011", "0111");
-		
+
 begin
 	-- 1khz refresh rate for each led segment
-	LED_TIMER : entity work.timer generic map (interrupt => 10**3) port map (clk, reset, pulse);
-	
+	timer:
+	entity work.timer generic map (interrupt => 10**3) port map (clk, reset, false, pulse);
+
 	is_negative <= rawd(rawd'high) = '1';
 	absolute <= unsigned(abs(rawd));
 	int_part <= absolute(absolute'high downto 1);
 	fract_part <= absolute(0);
-	
+
 	bcd <= tobcd(int_part);
-	
+
 	dot <= '0' when cnt = 1 else '1';
-	
+
 	process (cnt, bcd, is_negative, fract_part) is
 		variable active : unsigned(3 downto 0);
 		variable setval : integer range segarray'range(1);
 	begin
-		active := unsigned(bcd(cnt*4-1 downto (cnt-1)*4));
-		case cnt is
-			when 0 =>
-				if fract_part = '1' then
-					setval := 5;
-				else
-					setval := 0;
-				end if;
-			
-			when 1 | 2 =>
-				setval := to_integer(active);
-				
-			when 3 =>
-				if is_negative then
-					setval := 10; --minus sign
-				else
-					setval := to_integer(active);
-				end if;
-		end case;			
-				
+
+		if cnt = 0 then
+			if fract_part = '1' then
+				setval := 5;
+			else
+				setval := 0;
+			end if;
+		elsif cnt = 3 and is_negative then
+			setval := 10; --minus sign
+		else
+			setval := to_integer(bcddigit(bcd, cnt-1));
+		end if;
+
 		digit <= segarray(setval);
 	end process;
-							
+
 	segment <= dot & digit;
 	an <= sel(cnt);
 
-
+	counter:
 	process (clk, reset) begin
 		if reset = '1' then
-			cnt_raw <= "00";
+			cnt <= 0;
 		elsif rising_edge(clk) then
-			if pulse = '1' then
-				cnt_raw <= cnt_raw + 1;
+			if pulse then
+				cnt <= (cnt + 1) mod 4;
 			end if;
 		end if;
 	end process;
-	cnt <= to_integer(cnt_raw);
-	
+
 end architecture;
 
