@@ -21,7 +21,7 @@ end Mem;
 --******************************************************
 
 Architecture Behavioral of Mem is
-	signal registers : CHAR_ARRAY (memSize-1 downto 0);
+	signal registers : CHAR_ARRAY (0 to memSize-1);
 begin
 	P0 : process (clk, rst, readWrite, enable)
 	begin				
