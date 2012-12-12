@@ -17,7 +17,14 @@ architecture a of fpga_tempviewer is
 	signal temperature : signed(7 downto 0);
 begin
 	sensor:
-	entity work.dispatch port map (clk, reset, DQ, temperature);
+	entity work.ds1820 port map
+		( clk => clk
+		, reset => reset
+		, valid => open
+		, measure => '1'
+		, DQ => DQ
+		, temperature => temperature
+		);
 
 	display:
 	entity work.segment_temperature port map(clk, reset, temperature, an, seg);

@@ -4,15 +4,18 @@ use ieee.numeric_std.all;
 use work.onewire.all;
 
 
-entity dispatch is
+entity ds1820 is
 	port	( clk, reset : in std_ulogic
+			; measure : in std_ulogic
+			; valid : buffer std_ulogic
 			; DQ : inout std_logic
 			; temperature : buffer signed(7 downto 0) := (others => '0')
 			);
 end entity;
 
-architecture a of dispatch is
-	type state_t is ( init1
+architecture a of ds1820 is
+	type state_t is ( idle
+					, init1
 					, skiprom_convt
 					, wait_convt
 					, init2
@@ -29,8 +32,6 @@ architecture a of dispatch is
 	signal slot_max, slot_cnt : slot_t;
 	signal inbuf : std_ulogic_vector(7 downto 0) := x"00";
 begin
-
-
 
 	onewire_proto:
 	entity work.onewire_proto port map
@@ -49,13 +50,18 @@ begin
 
 	process (clk, reset) begin
 		if reset = '1' then
-			state <= init1;
+			state <= idle;
 			temperature <= (others => '0');
 			inbuf <= x"00";
+			valid <= '0';
 		elsif rising_edge(clk) then
 			state <= next_state;
 			if pushtemp = '1' then
 				temperature <= signed(inbuf);
+				valid <= '1';
+			end if;
+			if next_state = init1 then
+				valid <= '0';
 			end if;
 			if sample_now = '1' then
 				inbuf(slot_cnt) <= read_bit;
@@ -63,13 +69,18 @@ begin
 		end if;
 	end process;
 
-	process (state, ready, slot_cnt, inbuf) begin
+	process (state, ready, slot_cnt, inbuf, measure) begin
 		control <= ctl_idle;
 		next_state <= state;
 		slot_max <= 0;
 		write_bit <= '-';
 		pushtemp <= '0';
 		case state is
+			when idle =>
+				if measure = '1' then
+					next_state <= init1;
+				end if;
+
 			when init1 =>
 				if ready = '1' then
 					next_state <= skiprom_convt;
@@ -110,7 +121,7 @@ begin
 				slot_max <= inbuf'high;
 				if ready = '1' then
 					pushtemp <= '1';
-					next_state <= init1;
+					next_state <= idle;
 					control <= ctl_reset;
 				end if;
 

@@ -3,20 +3,27 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.onewire.all;
 
-entity dispatch_test is
+entity ds1820_test is
 end entity;
 
-architecture a of dispatch_test is
+architecture a of ds1820_test is
 	signal clk, sensor : std_ulogic := '0';
 	signal reset : std_ulogic := '1';
 	signal DQ : std_logic;
+	signal temperature : signed(7 downto 0);
+	signal measure : std_ulogic := '1';
 begin
-	dispatch:
-	entity work.dispatch port map
+	ds1820:
+	entity work.ds1820 port map
 		( clk => clk
 		, reset => reset
+		, valid => open
+		, measure => measure
+		, temperature => temperature
 		, DQ => DQ
 		);
+
+	measure <= '0' after 40 us;
 
 
 	-- Simulate open drain with high pullup resistor
