@@ -38,7 +38,7 @@ Architecture Behavioral of At is
 	signal state : state_type := RECEIVE_START;
 	signal address, addressHigh : INTEGER range memSize-1 downTo 0 := 0; 
 	signal counter : UNSIGNED(26 downTo 0) := "000000000000000000000000000";
-	constant timerVal : UNSIGNED(26 downTo 0) := "000000000000000000000000111"; -- time out between bytes
+	constant timerVal : UNSIGNED(26 downTo 0) := baud_1; --"000000000000000000000000111"; -- time out between bytes
 	--constant codeWords : CHAR_ARRAY(3 downTo 0) := "test";
 begin
 	comp_mem : entity work.Mem generic map (memSize => memSize) 
@@ -52,7 +52,9 @@ begin
 			case state is 
 
 			when RECEIVE_START =>
-				state <= RECEIVE_W_H;
+				if (messageAvail = '0') then
+					state <= RECEIVE_W_H;
+				end if;
 
 			when RECEIVE_W_H =>
 				if (timeOut = '1') then
@@ -108,7 +110,7 @@ begin
 			sendByteOut <= '0';
 
 			-- Receive
-			if (state = RECEIVE_START) then
+			if (state = RECEIVE_START) then				
 				address <= 0;
 				addressHigh <= 0;
 			end if;
@@ -123,7 +125,7 @@ begin
 					timerEnable <= '0';
 				end if;
 			end if;
-
+	
 			if (state = RECEIVE_W_L) then
 				timerEnable <= '1';
 				if (messageAvail = '0') then
