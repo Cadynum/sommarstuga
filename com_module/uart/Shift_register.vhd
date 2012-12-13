@@ -17,7 +17,7 @@ begin
 	begin
 		if (rising_edge(clk)) then
 			if (shift = '1') then
-				reg <= reg (6 downto 0) & serialIn;
+				reg <= serialIn & reg (7 downto 1);
 			end if;
 		end if;
 	end process;

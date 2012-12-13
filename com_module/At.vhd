@@ -27,70 +27,70 @@ entity At is
 	     sendByteOut     : out STD_LOGIC := '0';
 	     sendReady        : in STD_LOGIC;
 	     atByteStreamIn  : in STD_LOGIC_VECTOR(7 downTo 0);
-	     atByteStreamOut : out STD_LOGIC_VECTOR(7 downTo 0));
+	     atByteStreamOut : out STD_LOGIC_VECTOR(7 downto 0));
 end At;
 
 --***********************************************************
 Architecture Behavioral of At is
-	signal enable, readWrite, timerEnable, timeOut, send : STD_LOGIC := '0'; --, runTimer, timeOut : STD_LOGIC := '0';
+	signal enable, readWrite, timerEnable, timeOut, clr: STD_LOGIC := '0'; --, runTimer, timeOut : STD_LOGIC := '0';
 	signal memBus : STD_LOGIC_VECTOR(7 downTo 0);
-	type state_type is (RECEIVE_WAIT_HIGH, RECEIVE_WAIT_LOW, DECODE, DATA_OUT, DATA_IN, ENCODE, SEND_WAIT_HIGH, SEND_WAIT_LOW);
-	signal state : state_type := RECEIVE_WAIT_HIGH;
-	signal address : INTEGER range memSize-1 downTo 0 := 0; 
+	type state_type is (RECEIVE_START, RECEIVE_W_H, RECEIVE_W_L, DECODE, DATA_OUT, DATA_IN, ENCODE, SEND_START, SEND_W_H, SEND, SEND_W_L );
+	signal state : state_type := RECEIVE_START;
+	signal address, addressHigh : INTEGER range memSize-1 downTo 0 := 0; 
 	signal counter : UNSIGNED(26 downTo 0) := "000000000000000000000000000";
-	constant timerVal : UNSIGNED(26 downTo 0) := baud_1;-- "000000000000000000000010000"; -- time out between bytes
-	--signal i : UNSIGNED (26 downto 0) := (others => '0');
+	constant timerVal : UNSIGNED(26 downTo 0) := "000000000000000000000000111"; -- time out between bytes
 	--constant codeWords : CHAR_ARRAY(3 downTo 0) := "test";
 begin
 	comp_mem : entity work.Mem generic map (memSize => memSize) 
 				   port map(clk => clk, rst => rst, enable => enable, readWrite => readWrite, address => address, memBus => memBus);
 
---	readWrite <= '1' when state = RECEIVE else '0';
---	enable <= '1' when (state = RECEIVE OR state = SEND) else '0';
---	memBus <= atByteStreamIn when (readWrite = '1' AND enable = '1') else (others=>'Z');
---	atByteStreamOut <= memBus when (readWrite = '0' AND enable = '1') else "UUUUUUUU";
-
-	--Next state logic
-	--with state select
-	--timerEnable <= '1' when RECEIVE_WAIT_LOW | RECEIVE_WAIT_HIGH,
-	--	       '0' when others;
-
 	P0 : process (clk, rst)
 	begin
 		if (rst = '1') then
-			state <= RECEIVE_WAIT_HIGH;
+			state <= RECEIVE_START;
 		elsif (rising_edge(clk)) then
 			case state is 
-			when RECEIVE_WAIT_HIGH =>
-				if (timeOut = '1') then
-					if (address /= 0) then
-						state <= DECODE;
-					end if;
-				elsif (messageAvail = '1') then
-					state <= RECEIVE_WAIT_LOW;
-				end if;
 
-			when RECEIVE_WAIT_LOW =>
+			when RECEIVE_START =>
+				state <= RECEIVE_W_H;
+
+			when RECEIVE_W_H =>
+				if (timeOut = '1') then
+					state <= RECEIVE_START;		-- UART timed out on 
+				elsif (messageAvail = '1') then
+					state <= RECEIVE_W_L;
+				end if;
+				
+			when RECEIVE_W_L =>
 				if (timeOut = '1') then
 					state <= DECODE;
 				elsif (messageAvail = '0') then
-					state <= RECEIVE_WAIT_HIGH;
+					state <= RECEIVE_W_H;
 				end if;
 
 			when DECODE =>
-				state <= SEND_WAIT_HIGH;
+				state <= SEND_START;
+
 			when DATA_OUT =>
 			when DATA_IN =>
 			when ENCODE =>
-			when SEND_WAIT_HIGH =>
-				if (address = 0) then
-					state <= RECEIVE_WAIT_HIGH;
-				elsif (sendReady = '1') then 
-					state <= SEND_WAIT_LOW;
+
+			when SEND_START =>
+				state <= SEND_W_H;
+
+			when SEND_W_H =>			
+				if (sendReady = '1') then
+					state <= SEND;
 				end if;
-			when SEND_WAIT_LOW =>
-				if (sendReady = '0') then 
-					state <= SEND_WAIT_HIGH;
+
+			when SEND =>
+				state <= SEND_W_L;
+
+			when SEND_W_L =>
+				if (address > addressHigh) then
+					state <= RECEIVE_START;
+				elsif (sendReady = '0') then
+					state <= SEND_W_H;		
 				end if;
 			end case;
 		end if;
@@ -107,56 +107,66 @@ begin
 			enable <= '0';	
 			sendByteOut <= '0';
 
-			if (state = RECEIVE_WAIT_HIGH) then
+			-- Receive
+			if (state = RECEIVE_START) then
+				address <= 0;
+				addressHigh <= 0;
+			end if;
+
+			if (state = RECEIVE_W_H) then
 				timerEnable <= '1';
-				if (timeOut = '1' AND address /= 0) then
-					address <= address - 1;
-				elsif (messageAvail = '1') then  --state change
+				if (messageAvail = '1') then
 					enable <= '1';
 					readWrite <= '1';
 					timerEnable <= '0';
-				end if;
-			end if;
-
-			if (state = RECEIVE_WAIT_LOW) then
-				timerEnable <= '1';
-				if (messageAvail = '0') then
-					address <= address + 1;
+				elsif (timeOut = '1') then
 					timerEnable <= '0';
 				end if;
 			end if;
 
-			if (state = SEND_WAIT_HIGH) then
-				if (sendReady = '1') then  --ready goes high, put out data on membus
-					enable <= '1';
-					readWrite <= '0';
-					send <= '1';
+			if (state = RECEIVE_W_L) then
+				timerEnable <= '1';
+				if (messageAvail = '0') then
+					address <= address + 1;
+					addressHigh <= address;
+					timerEnable <= '0';
+				elsif (timeOut = '1') then
+					timerEnable <= '0';
 				end if;
 			end if;
 
-			if (state = SEND_WAIT_LOW) then		-- 1 clk after ready goes high
-				if (send = '1') then -- send byte from membus
-					send <= '0';
-					sendByteOut <= '1';						
-				elsif (sendReady = '0') then	-- ready goes low
-					address <= address - 1;
+			--**************** send
+			if (state = SEND_START) then
+				address <= 0;
+			end if;
+
+			if (state = SEND_W_H) then
+				if (sendReady = '1') then
+					readWrite <= '0';
+					enable <= '1';
+				end if;
+			end if;
+
+			if (state = SEND) then
+				sendByteOut <= '1';
+			end if;
+
+			if (state = SEND_W_L) then
+				if (sendReady = '0') then
+					address <= address + 1;
 				end if;
 			end if;
 		end if;
 	end process;
 
-	P2 : process (clk)
+	P4 : process (clk)
 	begin
 		if (rising_edge(clk)) then		
-			if (state = RECEIVE_WAIT_LOW OR state = RECEIVE_WAIT_HIGH) then
 				if (timeOut = '1' OR timerEnable = '0') then
 					counter <= (others => '0');
 				else
 					counter <= counter + 1;
 				end if;
-			else
-				counter <= (others => '0');
-			end if;
 		end if;
 	end process;
 
