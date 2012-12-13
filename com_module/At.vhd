@@ -71,7 +71,8 @@ begin
 				end if;
 
 			when DECODE =>
-				state <= SEND_START;
+				
+				state <= SEND_START;			-- ** DEBUG **
 
 			when DATA_OUT =>
 			when DATA_IN =>
@@ -89,7 +90,7 @@ begin
 				state <= SEND_W_L;
 
 			when SEND_W_L =>
-				if (address > addressHigh) then
+				if (address = addressHigh) then
 					state <= RECEIVE_START;
 				elsif (sendReady = '0') then
 					state <= SEND_W_H;		
