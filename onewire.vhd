@@ -15,7 +15,7 @@ entity onewire_proto is
 			; ready : buffer std_ulogic
 			; control : in control_t
 			; write_bit : in std_ulogic
-			; read_bit, sample_now_d : buffer std_ulogic
+			; read_bit, sample_now : buffer std_ulogic
 			; slot_max : in slot_t
 			; slot_cnt : buffer slot_t
 			; error : buffer std_ulogic
@@ -85,7 +85,6 @@ architecture a of onewire_proto is
 
 	signal cnt : integer range 0 to 512-1;
 
-	signal sample_now : std_ulogic;
 	signal slot_cnt_inc, slot_cnt_reset : boolean;
 begin
 	usec_timer:
@@ -128,15 +127,12 @@ begin
 			DQFlipFlop <= '1';
 		elsif rising_edge(clk) then
 			state <= next_state_signal;
-			sample_now_d <= sample_now;
-			if sample_now = '1' then
-				read_bit <= DQI;
-			end if;
 			DQFlipFlop <= DQO;
 			DQId <= DQ;
 			DQI <= DQId;
 		end if;
 	end process;
+	read_bit <= DQI;
 
 
 	process (cnt, slot_cnt, slot_max, DQI, state, write_bit, control, pulse) is

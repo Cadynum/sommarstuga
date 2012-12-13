@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <report-views version="2.0" >
  <header>
-  <DateModified>2012-12-11T21:08:29</DateModified>
+  <DateModified>2012-12-13T22:14:56</DateModified>
   <ModuleName>fpga_tempviewer</ModuleName>
   <SummaryTimeStamp>2012-12-11T21:06:43</SummaryTimeStamp>
   <SavedFilePath>/home/ojeling/sommarstuga/fpga_tempviewer_xilinx/iseconfig/fpga_tempviewer.xreport</SavedFilePath>

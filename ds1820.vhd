@@ -41,7 +41,7 @@ begin
 		, control => control
 		, write_bit => write_bit
 		, read_bit => read_bit
-		, sample_now_d => sample_now
+		, sample_now => sample_now
 		, slot_max => slot_max
 		, slot_cnt => slot_cnt
 		, DQ => DQ
