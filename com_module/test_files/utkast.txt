@@ -1,0 +1,86 @@
+AT state flow chart:
+
+wait receive	in: +CMTI = <mem>, <index>
+get command	out: AT+CMGF = 1
+		out: AT+CMGR = <index>
+parse data
+decode data
+control out
+wait data
+read data
+encode data
+init send		out: AT+CMGS = "<number>"
+wait response		">"
+send data		command
+
+--------------
+
+AT : process
+begin
+	if (rising_edge(clk)) then
+		case at_state is
+		when 
+		end case;
+	end if;
+end process;
+
+RECEIVE : process
+DECODE : process
+ENCODE : process
+SEND : process
+----------------
+
+AT States:
+
+-- WAIT_COMMAND
+	p : receive (+CMTI = <mem>, <index>)
+		receive_start
+		wait_high
+		wait_low
+-- GET_NUMBER
+-- GET_INDEX
+-- SET_MODE
+	P : send (AT+CMGF = 1)
+		send_start
+		wait_high
+		send
+		wait_low
+-- GET_COMMAND
+	p : send (AT+CMGR = <index>)
+		send_start
+		wait_high
+		send
+		wait_low
+	p : receive (<message string>)
+		receive_start
+		wait_high
+		wait_low
+	p : decode
+		get_command
+		get_number
+		get_data
+-- CONTROL_OUT
+	enable ctr
+	enable data
+-- CONTROL_IN
+	wait answer
+	enable ctr
+	enable data
+-- SEND_DATA
+	p : encode
+		set_number
+		set_data
+	P : send (AT+CMGS = "<number>")
+		send_start
+		wait_high
+		send
+		wait_low
+	p : receive (">")
+		receive_start
+		wait_high
+		wait_low
+	p : send (<data>)
+		send_start
+		wait_high
+		send
+		wait_low
