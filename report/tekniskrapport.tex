@@ -21,8 +21,13 @@
 }
 
 % kod
-\lstset{language=VHDL}
-\lstset{columns=fullflexible, basicstyle=\ttfamily, keepspaces=true}
+\lstset{
+	language=VHDL,
+	tabsize=4, 
+	columns=fullflexible,
+	%basicstyle=\ttfamily,
+	keepspaces=true
+}
 
 
 % Justera avstånd mellan rader i innehållsförteckningen
@@ -295,17 +300,33 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 			\end{tabular}
 	\end{center}
 
-\newpage
 
+\clearpage
 \section{Programkod (VHDL)}
+\lstinputlisting{../onewire.vhd}
 
-\newpage
 
+\clearpage
 \section{Arbetsredogörelse}
 
 \subsection{Christian}
 
-\subsection{Christoffer}
+\subsection{Christoffer Öjeling}
+\begin{itemize}
+	\item Komponenten för mätning och avläsning av temperatur från DS18S20. Inkluside hjälpfunktioner.
+	\item Lött DS18S20-konstruktionen på ett mönsterkort.
+	\item Visning av ett binärt tal på FPGAns 7 segment display.
+	\item Testing och verifikation av DS18S20 kontrollen.
+	\item Binär till BCD konverterare.
+	\item Allt i rapporten som relaterar till temperatursensorn DS18S20 och 7 segments displayn:
+		\begin{itemize}
+		\item \fullref{sec:temperatur}
+		\item \fullref{sec:7seg}
+		\item \fullref{sec:hw:ds18s20}
+		\item \fullref{sec:sig:ds18s20}
+		\item \fullref{sec:sig:segment}
+		\end{itemize}
+\end{itemize}
 
 \subsection{Jan}
 
