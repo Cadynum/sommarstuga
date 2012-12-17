@@ -1,6 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
+use IEEE.STD_LOGIC_ARITH.ALL;
+--use IEEE.NUMERIC_STD.all;
 
 -- ********************************************************************************
 -- Definitions file
@@ -10,6 +11,7 @@ use IEEE.STD_LOGIC_ARITH.all;
 
 package Defs is
 	type CHAR_ARRAY is array (integer range<>) of std_logic_vector(7 downto 0);
+	type CHARACTER_ARRAY is array (integer range<>) of Character;
 
 	constant baud_1      : UNSIGNED (26 downTo 0) := "101111101011110000100000000";-- 1 sec
 	constant baud_9600   : UNSIGNED (26 downTo 0) := "000000000000010100010110000";
@@ -34,9 +36,26 @@ package Defs is
 -- procedure <procedure_name> (<type_declaration> <constant_name>	: in <type_declaration>);
 --
 
+	function char2int (arg : character) return natural;
+	function char2std (arg : character) return std_logic_vector;
+
+
 end Defs;
 
 package body Defs is
+	function char2int(arg : character)
+		return natural is
+		begin
+			return character'pos(arg);
+	end char2int;
+
+	function char2std(arg : character)
+		return std_logic_vector is
+		begin
+			return std_logic_vector (conv_unsigned(char2int(arg),8));
+	end char2std;
+
+
 
 ---- Example 1
 --  function <function_name>  (signal <signal_name> : in <type_declaration>  ) return <type_declaration> is
