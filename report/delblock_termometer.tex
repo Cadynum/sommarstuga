@@ -162,20 +162,20 @@ Se \autoref{fig:rwslots}.
 
 
 
-%%% 7 segments display %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{7 Segments display}\label{sec:7seg}
-Delblocket ansvarar för att visa ett 8 bitars binärt tal på tvåkomplementsform där bit 7--1 är heltalsdelen och bit 0 decimaldelen på en 7 segments display med basen 10.
+%%% 7-segmentsdisplay %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{7-Segmentsdisplay}\label{sec:7seg}
+Delblocket ansvarar för att visa ett 8 bitars binärt tal på tvåkomplementsform där bit 7--1 är heltalsdelen och bit 0 decimaldelen på en 7-segmentsdisplay med basen 10.
 
 Det finns stöd för att visa tal mellan -99 -- 999, med en decimalsiffra som antingen är .0 eller .5. Det är tillräckligt för temperatursensorn som är specifierad mellan $-75 -- 125 \pm5$.
 \subsubsection{segment\_temperature}
 
 \paragraph{Interface}
-Komponenten tar ett binärt tal som input och ger utsignalerna till 7 segments displayerna.
+Komponenten tar ett binärt tal som input och ger utsignalerna till 7-segmentsdisplayerna.
 
 <bild>
 
 \paragraph{Implementation}
-De fyra fysiska 7 segmentsdisplayerna har en gemensam databuss. Varje display har även en enable signal. Komponenten växlar mellan att visa de olika displayerna med 1kHz, vilket för ögat upplevs som att alla lyser konstant.
+De fyra fysiska 7-segmentsdisplayerna har en gemensam databuss. Varje display har även en enable signal. Komponenten växlar mellan att visa de olika displayerna med 1kHz, vilket för ögat upplevs som att alla lyser konstant.
 \paragraph{bcd}\label{sec:bcd}
 Funktion som gör om ett binärt tal utan tecken till bcd-form. ``Double Dabble'' algoritmen används internt i form utav ett kombinatoriskt nät.
 

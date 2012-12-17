@@ -1,5 +1,5 @@
 \section{Signallista}
-\subsection{DS18S20}
+\subsection{DS18S20}\label{sec:sig:ds18s20}
 \begin{table}[H]
 	\begin{tabularx}{\textwidth}{p{2cm} p{4.3cm} X}
 		\hline
@@ -17,7 +17,7 @@
 \end{table}
 
 
-\subsection{segment\_temperature}
+\subsection{segment\_temperature}\label{sec:sig:segment}
 \begin{table}[H]
 	\begin{tabularx}{\textwidth}{p{2cm} p{4.3cm} X}
 		\hline
@@ -29,7 +29,7 @@
 		valid & out std\_ulogic & Temperaturavläsning klar. 
 			Giltig så länge \signal{valid = '1'} \\
 		an & buffer std\_ulogic\_vector(3 downto 0) & 7 Segment-enable \\
-		segment & buffer std\_ulogic\_vector(7 downto 0) & Utsignal till 7 segmentsbussen \\
+		segment & buffer std\_ulogic\_vector(7 downto 0) & Utsignal till 7-segmentsbussen \\
 		\hline
 	\end{tabularx}
 \end{table}

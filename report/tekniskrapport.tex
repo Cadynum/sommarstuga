@@ -21,8 +21,20 @@
 }
 
 % kod
-\lstset{language=VHDL}
-\lstset{columns=fullflexible, basicstyle=\ttfamily, keepspaces=true}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\lstset{
+	language=VHDL,
+	tabsize=4,
+	columns=fullflexible,
+	basicstyle=\footnotesize\ttfamily,
+	%basicstyle=\footnotesize,
+	keepspaces=true,
+	keywordstyle=\color{blue},          % keyword style
+	commentstyle=\color{dkgreen},       % comment style
+	stringstyle=\color{mauve},         % string literal style
+}
 
 
 % Justera avstånd mellan rader i innehållsförteckningen
@@ -61,7 +73,7 @@
 \newcommand {\Tx} {T\textsubscript{x}}
 \newcommand {\Rx} {R\textsubscript{x}}
 \newcommand {\fullref}[1] {\ref{#1} \nameref{#1}}
-\newcommand{\degcel}{\ensuremath{^\circ}C}
+\newcommand{\degcel}{\ensuremath{^\circ\mathrm{C}}}
 
 
 %-----------------------------------------------------------
@@ -313,12 +325,23 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 		\end{tabularx}
 	\end{table}
 
-\newpage
 
+\clearpage
 \section{Programkod (VHDL)}
+All programkoden inklusive testfiler finns i ett git-källkodsrepository:
+\begin{lstlisting}[	language=VHDL, basicstyle=\ttfamily]
+https://github.com/Cadynum/sommarstuga.git
+\end{lstlisting}
 
-\newpage
+%\newcommand{\vhdl}[1]{\clearpage\subsection{#1}\label{sec:code:#1}%\lstinputlisting{../#1}}
+%\vhdl{onewire.vhd}
+%\vhdl{ds1820.vhd}
+%\vhdl{segment-temperature.vhd}
+%\vhdl{timer.vhd}
+%\vhdl{bcd.vhd}
 
+
+\clearpage
 \section{Arbetsredogörelse}
 
 \subsection{Christian}
@@ -338,7 +361,28 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 \end{itemize}
 
 
-\subsection{Christoffer}
+\subsection{Christoffer Öjeling}
+\begin{itemize}
+	\item Komponenten för mätning och avläsning av temperatur från DS18S20 inkluside hjälpfunktioner.
+	\item Lött den korrekta DS18S20-konstruktionen på ett mönsterkort.
+	\item Visning av ett binärt tal på FPGAns 7-segmentsdisplay.
+	\item Testning och verifikation av DS18S20 kontrollen.
+	\item Binär till BCD konverterare.
+	\item Allt i rapporten som relaterar till temperatursensorn DS18S20 och 7-segmentsdisplayn.
+	\item Följande VHDL-moduler:
+	\begin{itemize}
+%		\item \fullref{sec:code:onewire.vhd}
+%		\item \fullref{sec:code:ds1820.vhd}
+%		\item \fullref{sec:code:segment-temperature.vhd}
+%		\item \fullref{sec:code:timer.vhd}
+%		\item \fullref{sec:code:bcd.vhd}
+		\item onewire.vhd
+		\item ds18s20.vhd
+		\item segment-temperature.vhd
+		\item timer.vhd
+		\item bcd.vhd
+	\end{itemize}
+\end{itemize}
 
 \subsection{Jan}
 
