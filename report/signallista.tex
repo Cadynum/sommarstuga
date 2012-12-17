@@ -33,3 +33,26 @@
 		\hline
 	\end{tabularx}
 \end{table}
+
+\subsection{Com}
+\begin{table}[H]
+	\begin{tabularx}{\textwidth}{p{2cm} p{4.3cm} X}
+		\hline
+		\textbf{Namn} & \textbf{Typ} & \textbf{Kommentar} \\
+		\hline
+		clk & in std\_ulogic & Global klocka, 100MHz \\
+		rst & in std\_ulogic & Global asynkron reset \\
+		tempInAvail & in std\_logic & Temperatur finns tillgänlig på bus\\
+		elementInAvail & in std\_logic & Elementdata finns tillgänlig på bus\\
+		requestTemp & out std\_logic & Ber styrenheten om tempdata till bus\\
+		requestElement & out std\_logic & Ber styrenheten om elementdata till bus\\
+		elementOutAvail & out std\_logic & Meddelar styrenheten, elementdata på bus\\
+		tempIn & in std\_logic\_vector(7 downTo 0) & Databus från temperaturmodul\\
+		elementIn & in std\_logic\_vector(1 downTo 0) & Databus från elementmodul \\
+		elementOut & out std\_logic\_vector(7 downTo 0) & Databus till elementmodul\\
+		tx & out std\_logic & Seriel port ut till GSM enhet ut från AT-modul\\
+		rx & in std\_logic & Seriel port in till AT-modul från GSM-modul\\		
+		\hline
+	\end{tabularx}
+\end{table}
+
