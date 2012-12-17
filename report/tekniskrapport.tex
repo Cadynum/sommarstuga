@@ -81,15 +81,21 @@
 
 \end{titlepage}
 
-\newpage
 
 
 %-----------------------------------------------------------
 
 % Sammanfattning
 
-\begin{abstract}\centering
-Här ska våran sammanfattning vara!
+\begin{abstract}
+\begin{center}
+\Large\sffamily{\textbf{Sammanfattning}}
+\end{center}
+\vspace{0.4cm}
+Sommarstugekoll är en prototyp för avläsning av temperatur och reglering av element via SMS-kommunikation. Prototypen bygger på en FPGA, en extern temperatursensor och en mobiltelefon med serieinterface (RS232).
+Genom att skicka fördefinierade kommandon finns möjligheten att slå av/på element eller begära temperaturen.
+När ett sms tagits emot avkodas dess innehåll för att identifiera eventuella kommandon som getts till systemet och därefter utförs de.
+Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 \end{abstract}
 \thispagestyle{empty}
 
@@ -136,43 +142,27 @@ Här ska våran sammanfattning vara!
 	\\\\
 	Huvudenheten är uppbyggd utav en \emph{Field-Programmable Gate Array} (FPGA) innehållande
 	all logik.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{bigpicture.pdf}
+	\caption{Övergripande struktur för projektet}
+\end{figure}
 
-\newpage
 
+\clearpage
 \section{Systembeskrivning}
 
-	\subsection{Blockschema}
-		\begin{figure}[h!]
-			\centering
-			\advance\leftskip-3cm
-			\advance\rightskip-3cm
-			\includegraphics[width=15cm]{blockschema.eps}
-			\caption{Övergripande blockschema för huvudenheten.}
-		\end{figure}
+\subsection{Blockschema}
+\begin{figure}[h!]
+	\centering
+	\advance\leftskip-3cm
+	\advance\rightskip-3cm
+	\includegraphics[width=15cm]{blockschema.eps}
+	\caption{Övergripande blockschema för huvudenheten.}
+\end{figure}
 
-	\newpage
 
-	\subsection{Händelseförlopp}		
-		\begin{figure}[h!]
-			\centering
-			\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,semithick]
-			
-				\node[initial,state]	(A)				 {$Com$};
-				\node[state]		(B) [above of = A]		{$Temp$};
-				\node[state]		(C) [below of = A]		{$Elem$};
-
-				\path
-					(A)	edge [bend left]	node {comWantTemp} (B)
-						edge [bend left]	node {comWantElemStatus} (C)
-					(B)	edge [bend left]	node {comHasTempOnDb} (A)
-					(C)	edge [bend left]	node {comHasElemStatusDb} (A);
-			\end{tikzpicture}
-
-			\caption{\\Händelseförlopp för styrenheten.\\Namnen på bågarna mellan olika tillstånd anger signaler som ettställs vid tillståndsförändringen.}
-		\end{figure}
-
-\newpage
-
+\clearpage
 \section{Beskrivning av delblocken}
 
 	\subsection{Styrenhet}
@@ -185,7 +175,26 @@ Här ska våran sammanfattning vara!
 		\\\\
 		Styrenheten bygger på en tillståndsmaskin med tre tillstånd: \textbf{Com}, \textbf{Temp} och \textbf{Elem}, där vardera
 		av de tre tillstånd är kopplade till ett, och endast ett, utav de tre delblocken.
-		\\\\
+		
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,semithick]
+
+\node[initial,state]	(A)				 {$Com$};
+\node[state]		(B) [above of = A]		{$Temp$};
+\node[state]		(C) [below of = A]		{$Elem$};
+
+\path
+	(A)	edge [bend left]	node {comWantTemp} (B)
+		edge [bend left]	node {comWantElemStatus} (C)
+	(B)	edge [bend left]	node {comHasTempOnDb} (A)
+	(C)	edge [bend left]	node {comHasElemStatusDb} (A);
+\end{tikzpicture}
+
+\caption{Händelseförlopp för styrenheten.\\Namnen på bågarna mellan olika tillstånd anger signaler som ettställs vid tillståndsförändringen.}
+\end{figure}
+
+		
 		I \textbf{Com} ligger styrenheten och väntar på kommandon från delblocket \emph{Kommunikation}.
 		\\
 		Om en begäran att få veta inomhustemperaturen fås, kommer styrenheten att byta tillstånd till \textbf{Temp} och med hjälp av
