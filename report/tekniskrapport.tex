@@ -16,6 +16,10 @@
 \usepackage{float}
 \usepackage{tabularx}
 
+\hypersetup{
+    pdfborder = {0 0 0}
+}
+
 % kod
 \lstset{language=VHDL}
 \lstset{columns=fullflexible, basicstyle=\ttfamily, keepspaces=true}
@@ -234,13 +238,7 @@ Här ska våran sammanfattning vara!
 
 	
 \clearpage
-\section{Resultat och diskussion}
-
-	\subsection{Resultat}
-
-	\subsection{Felanalys}
-
-	\subsection{Diskussion}
+\input{resultat_analys.tex}
 
 
 \clearpage
@@ -290,11 +288,11 @@ Här ska våran sammanfattning vara!
 
 \section{Arbetsredogörelse}
 
-	\subsection{Christian}
+\subsection{Christian}
 
-	\subsection{Christoffer}
+\subsection{Christoffer}
 
-	\subsection{Jan}
+\subsection{Jan}
 
 
 \end{document}
