@@ -244,17 +244,23 @@ Här ska våran sammanfattning vara!
 \clearpage
 \appendix
 \pagenumbering{roman}
-\section{Flödesscheman}
+
+\input{signallista.tex}
+
+\clearpage
+\section{Kretsschema}
+	\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.88\textheight, angle=90]{kretsschema.eps}
+	\caption{Förenklat kretsschema, över de komponenter som används, baserat på Digilents kretsschema för Nexys3.}
+	\label{}
+\end{figure}
 
 
 \clearpage
-\input{signallista.tex}
+\section{Syntesschema}
 
-\newpage
-\section{Kretsschema}
-
-\newpage
-
+\clearpage
 \section{Komponentlista}
 \begin{table}[H]
 		\begin{tabularx}{\textwidth}{l X}
