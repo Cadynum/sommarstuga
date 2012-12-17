@@ -286,14 +286,32 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 \newpage
 
 \section{Pinlayout}
-	\begin{center}
-		\rowcolors{1}{white}{light-gray}
-			\begin{tabular}{l | l | l l}
-				\textbf{Pin}	&	\textbf{Beskrivning}     & \textbf{Från}	& \textbf{Till} \\
-				\hline
-				T1	&	Pin	& f 	& t
-			\end{tabular}
-	\end{center}
+	\begin{table}[H]
+		\begin{tabularx}{\textwidth}{l X l l}
+			\hline
+			\textbf{Pin} & \textbf{Beskrivning} & \textbf{Från} & \textbf{Till}\\
+			\hline
+			T17 & Katod för segment A & FPGA & 7-segmentsdisplayen\\
+			T18 & Katod för segment B & FPGA & 7-segmentsdisplayen\\
+			U17 & Katod för segment C & FPGA & 7-segmentsdisplayen\\
+			U18 & Katod för segment D & FPGA & 7-segmentsdisplayen\\
+			M14 & Katod för segment E & FPGA & 7-segmentsdisplayen\\
+			N14 & Katod för segment F & FPGA & 7-segmentsdisplayen\\
+			L14 & Katod för segment G & FPGA & 7-segmentsdisplayen\\
+			M13 & Katod för segment DP & FPGA & 7-segmentsdisplayen\\
+			N16 & Gemensam anod för 7-seg AN0 & FPGA & 7-segmentsdisplayen\\
+			N15 & Gemensam anod för 7-seg AN1 & FPGA & 7-segmentsdisplayen\\
+			P18 & Gemensam anod för 7-seg AN2 & FPGA & 7-segmentsdisplayen\\
+			P17 & Gemensam anod för 7-seg AN3 & FPGA & 7-segmentsdisplayen\\
+			U16 & Aktivera lysdiod LD0 & FPGA & LED0\\
+			V16 & Aktivera lysdiod LD1 & FPGA & LED1\\
+			U15 & Aktivera lysdiod LD2 & FPGA & LED2\\
+			V15 & Aktivera lysdiod LD3 & FPGA & LED3\\
+			N18 & Tx & FPGA & USB-UART FTDI FT232\\
+			N17 & Rx & FPGA & USB-UART FTDI FT232\\
+			\hline
+		\end{tabularx}
+	\end{table}
 
 \newpage
 
@@ -304,6 +322,21 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 \section{Arbetsredogörelse}
 
 \subsection{Christian}
+\begin{itemize}
+\item Jag har gjort blockschemat, tagit fram hur databussarna ska se ut (bredden på dem), hur många som behövs och var de ska vara någonstans.
+\item Skrivit koden för:
+	\begin{itemize}
+	\item Styrenheten.
+	\item Hantering utav elementen.
+	\item Översta lagret av delblocket Kommunikation.
+	\end{itemize}
+\item Jag lödde fast den ytmonterade temperatursensorn, som sen visade sig vara fel krets.
+\item Jag har satt ihop själva grundstrukturen för denna rapport och skrivit flertalet av kapitlen.
+\item Varit med och löst problemet med UART-mottagaren, beträffande när inkommande data ska börja att samplas för att kunna avgöra huruvida en bit är 1 eller 0  och hur länge datan ska samplas för att göra avgörandet.
+\item Tagit fram strukturen för hur AT-kommandona ska hanteras. Hur gsm-modulen förmedlar att ett nytt sms inkommit och hur innehållet i sms:et sedan hämtas ut ur gsm-modulens minne.
+\item Jag har skapat pinlayouten samt ritat kretsschemat, med hjälp av ett CAD program. Både pinlayouten och kretsschemat finns i appendix. Har även skapat signallistan för styrenheten och elementen.
+\end{itemize}
+
 
 \subsection{Christoffer}
 

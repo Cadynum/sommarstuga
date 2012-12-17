@@ -1,0 +1,34 @@
+\BOOKMARK [1][-]{section.1}{Systemspecifikation}{}% 1
+\BOOKMARK [1][-]{section.2}{Systembeskrivning}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Blockschema}{section.2}% 3
+\BOOKMARK [1][-]{section.3}{Beskrivning av delblocken}{}% 4
+\BOOKMARK [2][-]{subsection.3.1}{Styrenhet}{section.3}% 5
+\BOOKMARK [2][-]{subsection.3.2}{Temperatur}{section.3}% 6
+\BOOKMARK [3][-]{subsubsection.3.2.1}{DS18S20}{subsection.3.2}% 7
+\BOOKMARK [3][-]{subsubsection.3.2.2}{Onewire}{subsection.3.2}% 8
+\BOOKMARK [2][-]{subsection.3.3}{7 Segments display}{section.3}% 9
+\BOOKMARK [3][-]{subsubsection.3.3.1}{segment\137temperature}{subsection.3.3}% 10
+\BOOKMARK [2][-]{subsection.3.4}{Kommunikation}{section.3}% 11
+\BOOKMARK [2][-]{subsection.3.5}{Element}{section.3}% 12
+\BOOKMARK [1][-]{section.4}{H\345rdvara}{}% 13
+\BOOKMARK [2][-]{subsection.4.1}{Digilent Nexys3 - FPGA}{section.4}% 14
+\BOOKMARK [2][-]{subsection.4.2}{DS18S20 - Temperatursensor}{section.4}% 15
+\BOOKMARK [1][-]{section.5}{Resultat och diskussion}{}% 16
+\BOOKMARK [2][-]{subsection.5.1}{Resultat}{section.5}% 17
+\BOOKMARK [2][-]{subsection.5.2}{Felanalys}{section.5}% 18
+\BOOKMARK [2][-]{subsection.5.3}{Diskussion}{section.5}% 19
+\BOOKMARK [1][-]{appendix.A}{Signallista}{}% 20
+\BOOKMARK [2][-]{subsection.A.1}{DS18S20}{appendix.A}% 21
+\BOOKMARK [2][-]{subsection.A.2}{segment\137temperature}{appendix.A}% 22
+\BOOKMARK [2][-]{subsection.A.3}{Com}{appendix.A}% 23
+\BOOKMARK [2][-]{subsection.A.4}{Styrenhet}{appendix.A}% 24
+\BOOKMARK [2][-]{subsection.A.5}{Element}{appendix.A}% 25
+\BOOKMARK [1][-]{appendix.B}{Kretsschema}{}% 26
+\BOOKMARK [1][-]{appendix.C}{Syntesschema}{}% 27
+\BOOKMARK [1][-]{appendix.D}{Komponentlista}{}% 28
+\BOOKMARK [1][-]{appendix.E}{Pinlayout}{}% 29
+\BOOKMARK [1][-]{appendix.F}{Programkod \(VHDL\)}{}% 30
+\BOOKMARK [1][-]{appendix.G}{Arbetsredog\366relse}{}% 31
+\BOOKMARK [2][-]{subsection.G.1}{Christian}{appendix.G}% 32
+\BOOKMARK [2][-]{subsection.G.2}{Christoffer}{appendix.G}% 33
+\BOOKMARK [2][-]{subsection.G.3}{Jan}{appendix.G}% 34

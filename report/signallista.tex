@@ -55,4 +55,42 @@
 		\hline
 	\end{tabularx}
 \end{table}
-
+\subsection{Styrenhet}
+\begin{table}[H]
+	\begin{tabularx}{\textwidth}{l l X}
+		\hline
+		\textbf{Namn} & \textbf{Typ} & \textbf{Kommentar} \\
+		\hline
+		clk & in std\_logic & Global klocka, 100MHz \\
+		reset & in std\_logic & Global asynkron reset \\
+		tempPutTempOnDb & out std\_logic & Tala om för Temperatur-blocket att lägga ut temperaturen på databussen\\
+		tempNowOnDb & in std\_logic & Temperaturen finns tillgänlig på databussen\\
+		comHasTempOnDb & out std\_logic & Talar om för Kommunikations-blocket att temperaturen finns på databussen\\
+		comHasElemStatusOnDb & out std\_logic & Talar om för Kommunikations-blocket att aktuell elementstatus finns på databussen \\
+		comHasElemStatus & in std\_logic & Meddelar styrenheten att Element-blocket har ny elementstatus på bussen\\
+		comWantElemStatus & in std\_logic & Talar om för styrenheten att aktuell elementstatus önskas på databussen\\
+		comWantTemp & in std\_logic & Talar om för styrenheten att temperaturen önskas på databussen \\
+		elemHasStatusOnDb & out std\_logic & Talar om att ny elementstatus finns på databussen\\
+		elemPutStatusOnDb & out std\_logic & Talar om att aktuell elementstatus ska skrivas till databussen\\
+		elemNewStatusDone & in std\_logic & Talar om att elementstatus har uppdaterats till det som fanns på databussen\\
+		elemNewStatusOnDb & in std\_logic & Talar om att aktuell elementstatus finns tillgängligg på databussen\\
+		\hline
+	\end{tabularx}
+\end{table}
+\subsection{Element}
+\begin{table}[H]
+	\begin{tabularx}{\textwidth}{l l X}
+		\hline
+		\textbf{Namn} & \textbf{Typ} & \textbf{Kommentar} \\
+		\hline
+		clk & in std\_logic & Global klocka, 100MHz \\
+		reset & in std\_logic & Global asynkron reset \\
+		setNewStatus & in std\_logic & Reglera elementen enligt ny elementstatus från databussen\\
+		returnStatus & in std\_logic & Skriv aktuell elementstatus till databussen\\
+		statusOnDb & out std\_logic & Talar om att aktuell elementstatus skrivits till databussen\\
+		updatedStatus & out std\_logic & Talar om att elementstatus nu ändrat till det som fanns på databussen \\
+		input & in std\_logic\_vector(3:0) & Databuss för inkommand elementstatus\\
+		output & out std\_logic\_vector(3:0) & Databuss för utgående aktuell elementstatus\\
+		\hline
+	\end{tabularx}
+\end{table}
