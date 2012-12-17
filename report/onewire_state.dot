@@ -1,0 +1,61 @@
+digraph G
+{
+	//edge [fontname="cmr10"]
+	//node [fontname="cmr10"]
+	edge [fontsize=10];
+	node [fontsize=13];
+//	reset [shape=record, style=rounded, label=<{reset|<font point-size="9">DQ='Z'</font>}>]
+
+
+/*		subgraph {
+		rank = same; write; read;
+	} */
+	node [shape=record, style=rounded]
+	reset [shape=record, style="rounded, filled",color=white, fillcolor=black, fontcolor = white, label = <{\N|dq='0'}>]
+	postreset [label = <{\N}>]
+	reset -> postreset [label = " 500µs"]
+	postreset -> presence1 [label = " dq='1'"]
+	presence1 -> presence2 [label = " dq='0'"]
+	presence2 -> ready [label = " dq='1'"]
+
+	presence1 -> reset [label = timeout, constraint=false]
+	presence2 -> reset [label = timeout, constraint=false]
+
+	ready [label = <{\N|ready&lt;='1'}>]
+	ready -> reset [label = "control=\nctl_reset", constraint=false]
+	ready -> ready [label = "control=\nctl_idle"]
+
+	//Write
+	ready -> write_init [label = "control=\nctl_write"]
+	write_init [label = <{\N|dq='0'}>]
+	write_init -> write
+	write -> write_recover
+	write [label = <{\N|dq=write_bit}>]
+	write_recover -> write_init
+	write_recover -> ready [label = "slot_cnt = slot_max"]
+
+	//Read
+	ready -> read_init [label = "control=\nctl_read"]
+	read_init [label = <{\N|dq='0'}>]
+	read_init -> read
+	read -> read_recover
+	read [label = <{\N|sample&lt;=dq}>]
+	read_recover -> read_init
+	read_recover -> ready [label = "slot_cnt = slot_max"]
+
+}
+/*
+type state_t is	( Sreset
+					, Spostreset
+					, Spresence1
+					, Spresence2
+					, Spostpresence
+					, Sready
+					, Swrite_init
+					, Swrite
+					, Swrite_recover
+					, Sread_init
+					, Sread
+					, Sread_recover
+					);
+*/

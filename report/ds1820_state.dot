@@ -1,0 +1,54 @@
+digraph G
+{
+	layout=neato
+	splines=true;
+	sep="+25,25";
+	overlap=scalexy;
+	nodesep=0.6;
+	
+
+	node [shape=record, style=rounded]
+	edge [fontsize=10];
+	node [fontsize=13];
+	
+	idle [shape=circle, style="solid,filled", color=black, fillcolor=black, fontcolor = white]
+	init1 [shape = circle]
+	init2 [shape = circle]
+	idle -> init1 [label="measure='1'"]
+
+	init1 -> skiprom_convt [labelangle = 10,label="ready='1'\ncontrol<=ctl_write"]
+	
+	skiprom_convt [label=<{\N|slot_max &lt;= skipandconv'high<br/>write_bit &lt;= skipandconv(slot_cnt)}>]
+	skiprom_convt -> wait_convt [label="ready='1'\ncontrol &lt;= ctl_read"]
+	
+	wait_convt [label=<{\N|control &lt;= ctl_reset}>]
+	wait_convt -> init2 [label = "inbuf=x\"FF\" and ready='1'\ncontrol &lt;= ctl_reset"]
+
+	init2 -> skiprom_copy [labelangle = 10,label="ready='1'\ncontrol <= ctl_write"]
+	
+	skiprom_copy [ label = 	<{\N|slot_max&lt;=readscratch'high<br/>write_bit&lt;=readscratch(slot_cnt)}>]
+	skiprom_copy -> read_temp [label = "ready='1'\ncontrol<=ctl_read"]
+	
+	read_temp [ label = <{\N|slot_max&lt;=inbuf'high<br/>..sample logic..}>]
+	read_temp -> idle [label = "ready='1'\ncontrol<=ctl_reset"]
+	
+
+	
+
+}	
+/*
+type state_t is ( idle
+				, init1
+				, skiprom_convt
+				, wait_convt
+				, init2
+				, skiprom_copy
+				, read_temp
+				);
+			when skiprom_convt =>
+				slot_max <= skipandconv'high;
+				write_bit <= skipandconv(slot_cnt);
+				if ready = '1' then
+					next_state <= wait_convt;
+					control <= ctl_read;
+				end if;*/
