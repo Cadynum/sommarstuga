@@ -329,6 +329,49 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 \end{itemize}
 
 \subsection{Jan}
+\begin{itemize}
+	\item Kommunikationsmodul implementering
+	\item UART modul
+	\item AT modul
+	\item Avkodning / kodning av AT-kommando
+	\item Allt i rapporten som relaterar till kommunikationsmodulen.
+	\item Följande kodfiler
+		\begin{itemize}
+		\item Defs.vhd
+		\item Uart.vhd
+		\item At.vhd
+		\item Mem.vhd
+		\item Shift\_register.vhd
+		\item Uart\_rx\_ctrl.vhd
+		\item Uart\_tx\_ctrl.vhd (kod tagen från diligents hemsida)
+		\end{itemize}
+\end{itemize}
 
+\begin{table}[H]
+		\begin{tabularx}{\textwidth}{l X}
+			\hline
+			\textbf{Kodord}     & \textbf{Funktion} \\
+			\hline
+			get element	&	Begär antal element som är igång.\\
+			get temp	&	Begär nuvarande temperatur\\
+			set element:<element[int]		& Sätter antal element som ska vara igång\\
+			\hline
+			temp:<temp[int]>	& Anger nuvarande temperatur\\
+			element:<element[int]> &	Anger antal element igång\\
+		\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+		\begin{tabularx}{\textwidth}{p{2cm} X p{5cm}}
+			\hline
+			\textbf{Avsändare}  & \textbf{AT-kommando}     & \textbf{Funktion}\\
+			\hline
+			GSM-enhet	&	+CMTI=<mem. location>,<index>						&	Anger index för nytt meddelande. \\
+			AT-modul	&	AT+CMGF=1										&	Ställer in 'text mode' på GSM modulen.\\
+			AT-modul	&	AT+CMGR=<index>								&	Begär meddelandet med angivet index.\\
+			GSM-enhet	&	+CMGR:``REC READ'',``<telefon nr.>''``<datum>'' <kodord> <OK>	&  	Meddelandet med data och kodord från användaren.\\
+			AT-modul	&	AT+CMGS="<telefon nummer>" <data> 					&	Meddelande innehållandes svarsdata till användaren.\\
+		\end{tabularx}
+\end{table}
 
 \end{document}

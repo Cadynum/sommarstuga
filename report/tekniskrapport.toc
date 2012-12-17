@@ -1,0 +1,44 @@
+\select@language {swedish}
+\thispagestyle {empty}
+\contentsline {section}{\numberline {1}Systemspecifikation}{1}{section.1}
+\contentsline {section}{\numberline {2}Systembeskrivning}{2}{section.2}
+\contentsline {subsection}{\numberline {2.1}Blockschema}{2}{subsection.2.1}
+\contentsline {section}{\numberline {3}Beskrivning av delblocken}{3}{section.3}
+\contentsline {subsection}{\numberline {3.1}Styrenhet}{3}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Temperatur}{4}{subsection.3.2}
+\contentsline {subsubsection}{\numberline {3.2.1}DS18S20}{4}{subsubsection.3.2.1}
+\contentsline {paragraph}{Interface}{4}{section*.4}
+\contentsline {paragraph}{Implementation}{5}{section*.6}
+\contentsline {subsubsection}{\numberline {3.2.2}Onewire}{5}{subsubsection.3.2.2}
+\contentsline {paragraph}{Interface}{5}{section*.9}
+\contentsline {paragraph}{Implementation}{7}{section*.11}
+\contentsline {subparagraph}{Reset}{9}{section*.13}
+\contentsline {subparagraph}{Skrivning med \emph {write slots}}{9}{section*.15}
+\contentsline {subparagraph}{L\IeC {\"a}sning med \emph {read slots}}{9}{section*.16}
+\contentsline {subsection}{\numberline {3.3}7 Segments display}{11}{subsection.3.3}
+\contentsline {subsubsection}{\numberline {3.3.1}segment\_temperature}{11}{subsubsection.3.3.1}
+\contentsline {paragraph}{Interface}{11}{section*.18}
+\contentsline {paragraph}{Implementation}{11}{section*.19}
+\contentsline {paragraph}{bcd}{11}{section*.20}
+\contentsline {subsection}{\numberline {3.4}Kommunikation}{11}{subsection.3.4}
+\contentsline {subsection}{\numberline {3.5}Element}{11}{subsection.3.5}
+\contentsline {section}{\numberline {4}H\IeC {\r a}rdvara}{13}{section.4}
+\contentsline {subsection}{\numberline {4.1}Digilent Nexys3 - FPGA}{13}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}DS18S20 - Temperatursensor}{13}{subsection.4.2}
+\contentsline {section}{\numberline {5}Resultat och diskussion}{15}{section.5}
+\contentsline {subsection}{\numberline {5.1}Resultat}{15}{subsection.5.1}
+\contentsline {subsection}{\numberline {5.2}Felanalys}{15}{subsection.5.2}
+\contentsline {subsection}{\numberline {5.3}Diskussion}{15}{subsection.5.3}
+\contentsline {section}{\numberline {A}Signallista}{i}{appendix.A}
+\contentsline {subsection}{\numberline {A.1}DS18S20}{i}{subsection.A.1}
+\contentsline {subsection}{\numberline {A.2}segment\_temperature}{i}{subsection.A.2}
+\contentsline {subsection}{\numberline {A.3}Com}{ii}{subsection.A.3}
+\contentsline {section}{\numberline {B}Kretsschema}{iii}{appendix.B}
+\contentsline {section}{\numberline {C}Syntesschema}{iv}{appendix.C}
+\contentsline {section}{\numberline {D}Komponentlista}{v}{appendix.D}
+\contentsline {section}{\numberline {E}Pinlayout}{vi}{appendix.E}
+\contentsline {section}{\numberline {F}Programkod (VHDL)}{vii}{appendix.F}
+\contentsline {section}{\numberline {G}Arbetsredog\IeC {\"o}relse}{xiv}{appendix.G}
+\contentsline {subsection}{\numberline {G.1}Christian}{xiv}{subsection.G.1}
+\contentsline {subsection}{\numberline {G.2}Christoffer \IeC {\"O}jeling}{xiv}{subsection.G.2}
+\contentsline {subsection}{\numberline {G.3}Jan}{xiv}{subsection.G.3}
