@@ -1,0 +1,35 @@
+\section{Signallista}
+\subsection{DS18S20}
+\begin{table}[H]
+	\begin{tabularx}{\textwidth}{p{2cm} p{4.3cm} X}
+		\hline
+		\textbf{Namn} & \textbf{Typ} & \textbf{Kommentar} \\
+		\hline
+		clk & in std\_ulogic & Global klocka, 100MHz \\
+		reset & in std\_ulogic & Global asynkron reset \\
+		measure & in std\_ulogic & Påbörja temperaturavläsning \\
+		valid & buffer std\_ulogic & Temperaturavläsning klar. 
+			Giltig så länge \signal{valid = '1'} \\
+		DQ & inout std\_logic & Pinne till sensor \\
+		temperature & buffer signed(7 downto 0) & Temperatur i tvåkompliments binärform \\
+		\hline
+	\end{tabularx}
+\end{table}
+
+
+\subsection{segment\_temperature}
+\begin{table}[H]
+	\begin{tabularx}{\textwidth}{p{2cm} p{4.3cm} X}
+		\hline
+		\textbf{Namn} & \textbf{Typ} & \textbf{Kommentar} \\
+		\hline
+		clk & in std\_ulogic & Global klocka, 100MHz \\
+		reset & in std\_ulogic & Global asynkron reset \\
+		rawd & in signed(7 downto 0) & Temperatur i tvåkompliments binärform \\
+		valid & out std\_ulogic & Temperaturavläsning klar. 
+			Giltig så länge \signal{valid = '1'} \\
+		an & buffer std\_ulogic\_vector(3 downto 0) & 7 Segment-enable \\
+		segment & buffer std\_ulogic\_vector(7 downto 0) & Utsignal till 7 segmentsbussen \\
+		\hline
+	\end{tabularx}
+\end{table}

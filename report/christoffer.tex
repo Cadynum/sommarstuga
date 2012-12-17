@@ -1,4 +1,4 @@
-\documentclass[a4paper]{scrreprt}
+\documentclass[a4paper]{scrartcl}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[swedish]{babel}
@@ -6,9 +6,25 @@
 \usepackage{nameref}
 \usepackage{hyperref}
 \usepackage{listings}
+\usepackage[table]{xcolor}
 \usepackage{float}
 \usepackage{fixltx2e}
 \usepackage{tabularx}
+\usepackage{epstopdf}
+\usepackage{fancyhdr}
+
+% Fin header
+\pagestyle{fancy}
+\fancyhead[L]{\sffamily\leftmark}
+\fancyhead[R]{\sffamily\rightmark}
+
+\definecolor{light-gray}{gray}{0.95}
+
+\let\oldtabularx\tabularx
+\let\endoldtabularx\endtabularx
+\renewenvironment{tabularx}{\rowcolors{2}{white}{light-gray}\oldtabularx}{\endoldtabularx}
+
+
 \lstset{language=VHDL}
 \lstset{columns=fullflexible,basicstyle=\ttfamily}
 
@@ -37,7 +53,7 @@ All logik använder sig utav VHDL-standardbiblioteket \signal{numeric\_std} för
 \subsubsection{DS18S20}\label{sec:ds18s20}
 \paragraph{Interface}
 DS18S20 exponerar ett interface för mätning och avläsning av nuvarande temperatur. Mätningen initieras genom att \signal{measure} sätts till \signal{'1'}. När temperaturmätningen är klar kommer \signal{valid} sättas till \signal{'1'}.
-Då finns temperaturen att avläsa på \signal{temperature} som en \textit{fixed point signed integer} där bit 7--1 är heltalsdelen och bit 0 decimaldelen.
+Då finns temperaturen att avläsa på \signal{temperature} som ett binärt 8 bitars tal på tvåkomplementsform där där bit 7--1 är heltalsdelen och bit 0 decimaldelen.
 \signal{valid} fortsätter att vara \signal{'1'} tills en ny mätning initieras genom att \signal{measure} återigen sätts till \signal{'1'}.
 
 En temperaturmätning tar upp till 750ms.
@@ -59,7 +75,7 @@ VHDL koden är uppbyggd efter tvåprocessmodellen, med en klockad och en kombina
 
 \begin{tabularx}{\textwidth}[h]{c c X}
 	\hline
-	Master & Data & Kommentar\\
+	\textbf{Master} & \textbf{Data} & \textbf{Kommentar} \\
 	\hline
 	
 	\Tx & Reset & Reset puls.\\
@@ -191,8 +207,21 @@ Se \autoref{fig:rwslots}.
 
 
 \subsection{7 Segments display}\label{sec:7seg}
+Delblocket ansvarar för att visa ett 8 bitars binärt tal på tvåkomplementsform där bit 7--1 är heltalsdelen och bit 0 decimaldelen på en 7 segments display med basen 10.
+
+Det finns stöd för att visa tal mellan -99 -- 999, med en decimalsiffra som antingen är .0 eller .5. Det är tillräckligt för temperatursensorn som är specifierad mellan $-75 -- 125 \pm5$.
 \subsubsection{segment\_temperature}
-\subsubsection{bcd}
+
+\paragraph{Interface}
+Komponenten tar ett binärt tal som input och ger utsignalerna till 7 segments displayerna.
+
+<bild>
+
+\paragraph{Implementation}
+De fyra fysiska 7 segmentsdisplayerna har en gemensam databuss. Varje display har även en enable signal. Komponenten växlar mellan att visa de olika displayerna med 1kHz, vilket för ögat upplevs som att alla lyser konstant.
+\paragraph{bcd}\label{sec:bcd}
+Funktion som gör om ett binärt tal utan tecken till bcd-form. ``Double Dabble'' algoritmen används internt i form utav ett kombinatoriskt nät.
+
 
 \begin{figure}[htp]
 \centering
@@ -200,14 +229,6 @@ Se \autoref{fig:rwslots}.
 \caption{7-segments display}
 \label{}
 \end{figure}
-
-
-\subsection{Gemensamt}
-\subsubsection{timer}
-
-
-
-
 
 
 \clearpage
@@ -229,6 +250,43 @@ DS18S20 är en temperatursensor tillvärkad av Dallas Semiconductor (numera Maxi
 	\includegraphics[scale=0.8]{ds18s20_hardware.eps}
 	\caption{Dallas DS18S20}
 \end{figure}
+
+\clearpage
+\section{Signallista}
+\subsection{DS18S20}
+\begin{table}[H]
+	\begin{tabularx}{\textwidth}{p{2cm} p{4.3cm} X}
+		\hline
+		\textbf{Namn} & \textbf{Typ} & \textbf{Kommentar} \\
+		\hline
+		clk & in std\_ulogic & Global klocka, 100MHz \\
+		reset & in std\_ulogic & Global asynkron reset \\
+		measure & in std\_ulogic & Påbörja temperaturavläsning \\
+		valid & buffer std\_ulogic & Temperaturavläsning klar. 
+			Giltig så länge \signal{valid = '1'} \\
+		DQ & inout std\_logic & Pinne till sensor \\
+		temperature & buffer signed(7 downto 0) & Temperatur i tvåkompliments binärform \\
+		\hline
+	\end{tabularx}
+\end{table}
+
+
+\subsection{segment\_temperature}
+\begin{table}[H]
+	\begin{tabularx}{\textwidth}{p{2cm} p{4.3cm} X}
+		\hline
+		\textbf{Namn} & \textbf{Typ} & \textbf{Kommentar} \\
+		\hline
+		clk & in std\_ulogic & Global klocka, 100MHz \\
+		reset & in std\_ulogic & Global asynkron reset \\
+		rawd & in signed(7 downto 0) & Temperatur i tvåkompliments binärform \\
+		valid & out std\_ulogic & Temperaturavläsning klar. 
+			Giltig så länge \signal{valid = '1'} \\
+		an & buffer std\_ulogic\_vector(3 downto 0) & 7 Segment-enable \\
+		segment & buffer std\_ulogic\_vector(7 downto 0) & Utsignal till 7 segmentsbussen \\
+		\hline
+	\end{tabularx}
+\end{table}
 
 
 
