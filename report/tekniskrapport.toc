@@ -15,7 +15,7 @@
 \contentsline {subparagraph}{Reset}{9}{section*.13}
 \contentsline {subparagraph}{Skrivning med \emph {write slots}}{9}{section*.15}
 \contentsline {subparagraph}{L\IeC {\"a}sning med \emph {read slots}}{9}{section*.16}
-\contentsline {subsection}{\numberline {3.3}7 Segments display}{11}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.3}7-Segmentsdisplay}{11}{subsection.3.3}
 \contentsline {subsubsection}{\numberline {3.3.1}segment\_temperature}{11}{subsubsection.3.3.1}
 \contentsline {paragraph}{Interface}{11}{section*.18}
 \contentsline {paragraph}{Implementation}{11}{section*.19}
@@ -29,16 +29,17 @@
 \contentsline {subsection}{\numberline {5.1}Resultat}{15}{subsection.5.1}
 \contentsline {subsection}{\numberline {5.2}Felanalys}{15}{subsection.5.2}
 \contentsline {subsection}{\numberline {5.3}Diskussion}{15}{subsection.5.3}
-\contentsline {section}{\numberline {A}Signallista}{i}{appendix.A}
-\contentsline {subsection}{\numberline {A.1}DS18S20}{i}{subsection.A.1}
-\contentsline {subsection}{\numberline {A.2}segment\_temperature}{i}{subsection.A.2}
-\contentsline {subsection}{\numberline {A.3}Com}{ii}{subsection.A.3}
-\contentsline {section}{\numberline {B}Kretsschema}{iii}{appendix.B}
-\contentsline {section}{\numberline {C}Syntesschema}{iv}{appendix.C}
-\contentsline {section}{\numberline {D}Komponentlista}{v}{appendix.D}
-\contentsline {section}{\numberline {E}Pinlayout}{vi}{appendix.E}
-\contentsline {section}{\numberline {F}Programkod (VHDL)}{vii}{appendix.F}
-\contentsline {section}{\numberline {G}Arbetsredog\IeC {\"o}relse}{xiv}{appendix.G}
-\contentsline {subsection}{\numberline {G.1}Christian}{xiv}{subsection.G.1}
-\contentsline {subsection}{\numberline {G.2}Christoffer \IeC {\"O}jeling}{xiv}{subsection.G.2}
-\contentsline {subsection}{\numberline {G.3}Jan}{xiv}{subsection.G.3}
+\contentsline {section}{\numberline {A}Kommandon}{i}{appendix.A}
+\contentsline {section}{\numberline {B}Signallista}{i}{appendix.B}
+\contentsline {subsection}{\numberline {B.1}DS18S20}{i}{subsection.B.1}
+\contentsline {subsection}{\numberline {B.2}segment\_temperature}{ii}{subsection.B.2}
+\contentsline {subsection}{\numberline {B.3}Com}{ii}{subsection.B.3}
+\contentsline {section}{\numberline {C}Kretsschema}{iii}{appendix.C}
+\contentsline {section}{\numberline {D}Syntesschema}{iv}{appendix.D}
+\contentsline {section}{\numberline {E}Komponentlista}{v}{appendix.E}
+\contentsline {section}{\numberline {F}Pinlayout}{vi}{appendix.F}
+\contentsline {section}{\numberline {G}Programkod (VHDL)}{vii}{appendix.G}
+\contentsline {section}{\numberline {H}Arbetsredog\IeC {\"o}relse}{viii}{appendix.H}
+\contentsline {subsection}{\numberline {H.1}Christian}{viii}{subsection.H.1}
+\contentsline {subsection}{\numberline {H.2}Christoffer \IeC {\"O}jeling}{viii}{subsection.H.2}
+\contentsline {subsection}{\numberline {H.3}Jan}{viii}{subsection.H.3}
