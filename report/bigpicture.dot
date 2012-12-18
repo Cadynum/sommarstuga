@@ -1,0 +1,12 @@
+graph G {
+	layout = dot
+	Sommarstugekoll -- Styrenhet
+	Sommarstugekoll -- seg
+	Styrenhet -- Temperatur
+	Styrenhet -- Kommunikation
+	Styrenhet -- Element
+	
+
+	seg [label = "7-Segmentsdisplay", fontsize = "12pt"]
+}
+

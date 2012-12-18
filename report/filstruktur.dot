@@ -1,0 +1,38 @@
+graph G {
+	node [shape=none]
+	a [label = "sommarstuga.vhd"]
+	
+	ow [label = "onewire.vhd"]
+	tim [label = "timer.vhd"]
+	bcd [label = "bcd.vhd"]
+
+	subgraph {
+		rank = same
+		seg [label = "segment-temperature.vhd"]
+		styr [label = "styrenhet.vhd"]
+	}
+
+	subgraph {
+		rank = same
+		ds [label = "ds18s20.vhd"]
+		ele [label = "element.vhd"]
+		com [label = "com.vhd"]
+		
+	}
+
+	a -- styr
+	a -- seg
+	seg -- tim
+	seg -- bcd
+	styr -- ds
+	styr -- ele
+	styr -- com
+
+	com -- "at.vhd" -- "mem.vhd"
+	com -- "uart.vhd" -- "defs.vhd"
+	"uart.vhd" -- "uart_rx_ctrl.vhd"
+	"uart.vhd" -- "uart_tx_ctrl.vhd" [style = dashed]
+	"uart_rx_ctrl.vhd" -- "shift_register.vhd"
+	ds -- ow
+	ow -- tim
+}

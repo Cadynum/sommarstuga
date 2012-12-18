@@ -362,6 +362,13 @@ All programkoden inklusive testfiler finns i ett git-källkodsrepository:
 https://github.com/Cadynum/sommarstuga.git
 \end{lstlisting}
 
+\begin{figure}[htp]
+\centering
+\includegraphics[width=\textwidth]{filstruktur.pdf}
+\caption{Övergripande bild hur VHDL-moduler relaterar till varandra. Observera att uart\_tx\_ctrl.vhd ej är egenproducerad.}
+\end{figure}
+
+
 %\newcommand{\vhdl}[1]{\clearpage\subsection{#1}\label{sec:code:#1}%\lstinputlisting{../#1}}
 %\vhdl{onewire.vhd}
 %\vhdl{ds1820.vhd}
@@ -392,7 +399,7 @@ https://github.com/Cadynum/sommarstuga.git
 
 \subsection{Christoffer Öjeling}
 \begin{itemize}
-	\item Komponenten för mätning och avläsning av temperatur från DS18S20 inkluside hjälpfunktioner.
+	\item Alla Komponenter för mätning och avläsning av temperatur från DS18S20 inkluside hjälpfunktioner.
 	\item Lött den korrekta DS18S20-konstruktionen på ett mönsterkort.
 	\item Visning av ett binärt tal på FPGAns 7-segmentsdisplay.
 	\item Testning och verifikation av DS18S20 kontrollen.
@@ -428,7 +435,6 @@ https://github.com/Cadynum/sommarstuga.git
 		\item Mem.vhd
 		\item Shift\_register.vhd
 		\item Uart\_rx\_ctrl.vhd
-		\item Uart\_tx\_ctrl.vhd (kod tagen från diligents hemsida)
 		\end{itemize}
 \end{itemize}
 
