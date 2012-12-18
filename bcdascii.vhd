@@ -2,21 +2,20 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.bcd.all;
-use work.Defs.character_array;
+use work.Defs.char_array;
 
 entity bcdascii is
 	port	( clk, reset : in std_ulogic
 			; go : in std_ulogic
 			; ready : buffer std_ulogic
 			; rawd : in signed(7 downto 0)
-			; mem : buffer character_array(0 to 5)
+			; mem : buffer char_array(0 to 5)
 			; mem_len : buffer integer range 0 to 5
 			);
 end entity;
 
 
 architecture a of bcdascii is
-	constant zero_digit : integer := character'pos('0');
 	constant max_intd : integer := 2;
 	
 	type state_t is (idle, conv, psign, pskip, pint, pdot, pfrac);
@@ -30,6 +29,11 @@ architecture a of bcdascii is
 	signal absolute : unsigned(rawd'range);
 	signal int_part : unsigned(rawd'high-2 downto 0);
 	signal fract_part : std_ulogic;
+	
+	function chr2vec (c : character) return std_logic_vector is
+	begin
+		return std_logic_vector(to_unsigned(character'pos(c), 8));
+	end function;
 
 begin
 	mem_len <= cnt;
@@ -61,7 +65,7 @@ begin
 					
 				when psign =>
 					if is_negative then
-						mem(cnt) <= '-';
+						mem(cnt) <= chr2vec('-');
 						cnt <= cnt + 1;
 					end if;
 					state <= pskip;
@@ -69,16 +73,14 @@ begin
 				-- Skippar alla nollor i början av talet. 
 				-- Lämna alltid en nolla
 				when pskip =>
-					tmp := to_integer(bcddigit(bcd, bcdsel));
-					if tmp = 0 and bcdsel /= 0 then
+					if bcddigit(bcd, bcdsel) = 0 and bcdsel /= 0 then
 						bcdsel <= bcdsel - 1;
 					else
 						state <= pint;
 					end if;
 					
 				when pint =>
-					tmp := to_integer(bcddigit(bcd, bcdsel));
-					mem(cnt) <= character'val(tmp + zero_digit);
+					mem(cnt) <= x"3" & std_logic_vector(bcddigit(bcd, bcdsel));
 					cnt <= cnt + 1;
 					if bcdsel = 0 then
 						state <= pdot;
@@ -87,15 +89,15 @@ begin
 					end if;
 				
 				when pdot =>
-					mem(cnt) <= '.';
+					mem(cnt) <= chr2vec('.');
 					cnt <= cnt + 1;
 					state <= pfrac;
 					
 				when pfrac =>
 					if fract_part = '1' then
-						mem(cnt) <= '5';
+						mem(cnt) <= chr2vec('5');
 					else
-						mem(cnt) <= '0';
+						mem(cnt) <= chr2vec('0');
 					end if;	
 					ready <= '1';
 					state <= idle;		
