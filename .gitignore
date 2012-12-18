@@ -1,2 +1,4 @@
 *.o
 *.cf
+*.swp
+*-eps-converted-to.pdf
