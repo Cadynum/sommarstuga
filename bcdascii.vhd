@@ -3,14 +3,16 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.bcd.all;
 use work.Defs.char_array;
+use work.Defs.asciichr;
 
 entity bcdascii is
 	port	( clk, reset : in std_ulogic
 			; go : in std_ulogic
 			; ready : buffer std_ulogic
 			; rawd : in signed(7 downto 0)
-			; mem : buffer char_array(0 to 5)
-			; mem_len : buffer integer range 0 to 5
+			; chr : buffer asciichr
+			; chr_sel : in integer range 0 to 5
+			; chr_max : buffer integer range 0 to 5
 			);
 end entity;
 
@@ -21,6 +23,7 @@ architecture a of bcdascii is
 	type state_t is (idle, conv, psign, pskip, pint, pdot, pfrac);
 	signal state : state_t;
 	
+	signal mem : char_array(0 to 5) := (others => x"FF");
 	signal cnt : integer range 0 to 5 := 0;
 	signal bcdsel : integer range max_intd-1 downto 0 := max_intd-1;
 	
@@ -30,22 +33,19 @@ architecture a of bcdascii is
 	signal int_part : unsigned(rawd'high-2 downto 0);
 	signal fract_part : std_ulogic;
 	
-	function chr2vec (c : character) return std_logic_vector is
+	function chr2vec (c : character) return asciichr is
 	begin
-		return std_logic_vector(to_unsigned(character'pos(c), 8));
+		return asciichr(to_unsigned(character'pos(c), 8));
 	end function;
 
 begin
-	mem_len <= cnt;
+	chr_max <= cnt;
+	chr <= mem(chr_sel);
 	
-	is_negative <= rawd(rawd'high) = '1';
 	absolute <= unsigned(abs(rawd));
 	int_part <= absolute(absolute'high-1 downto 1);
-	fract_part <= absolute(0);
 	
-	process(clk, reset) is
-		variable tmp : integer range 0 to 9;
-	begin
+	process(clk, reset) begin
 		if reset = '1' then
 			state <= idle;
 			ready <= '0';
@@ -62,6 +62,8 @@ begin
 				when conv =>
 					state <= psign;
 					bcd <= tobcd(int_part);
+					fract_part <= absolute(0);
+					is_negative <= rawd(rawd'high) = '1';
 					
 				when psign =>
 					if is_negative then

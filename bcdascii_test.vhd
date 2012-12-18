@@ -2,6 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.Defs.char_array;
+use work.Defs.asciichr;
 
 entity bcdascii_test is
 end entity;
@@ -14,17 +15,21 @@ architecture a of bcdascii_test is
 	signal rawd : signed(7 downto 0) := "10000000";
 	signal mem : char_array(0 to 5);
 	signal mem_len : integer range 0 to 5;
+	signal chr : asciichr;
+	signal chr_max : integer range 0 to 5;
+	signal chr_sel : integer range 0 to 5;
 	
-	--function caToString (din : character_array; len : natural) return string is
-		--variable dout : string(1 to len);
-	--begin
-		--for i in 0 to len-1 loop
-			--dout(i+1) := din(i);
-		--end loop;
-		--return dout;
-	--end function;
+	function caToString (din : char_array; len : natural) return string is
+		variable dout : string(1 to len);
+	begin
+		for i in 0 to len-1 loop
+			dout(i+1) := character'val(to_integer(unsigned(din(i))));
+		end loop;
+		return dout;
+	end function;
 begin
-	module : entity work.bcdascii port map (clk, reset, go, ready, rawd, mem, mem_len);
+	module : entity work.bcdascii port map (clk, reset, go, ready, rawd, 
+		chr, chr_sel, chr_max);
 	
 	process is
 		variable testcnt : integer := 0;		
@@ -35,7 +40,14 @@ begin
 			wait until rising_edge(clk);
 			go <= '0';
 			wait until ready = '1';
-			-- report caToString(mem, mem_len+1) & " <- ";
+			
+			for jj in 0 to 5 loop
+				chr_sel <= jj;
+				wait until clk'event;
+				mem(jj) <= chr;
+			end loop;
+			report caToString(mem, chr_max+1);
+			
 			rawd <= rawd + 1;
 			wait for 50 ns;
 		end loop;

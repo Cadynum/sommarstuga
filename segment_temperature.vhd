@@ -63,7 +63,6 @@ begin
 		variable active : unsigned(3 downto 0);
 		variable setval : integer range segarray'range(1);
 	begin
-
 		if cnt = 0 then
 			if fract_part = '1' then
 				setval := 5;
