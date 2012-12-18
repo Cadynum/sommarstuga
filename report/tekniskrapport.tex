@@ -320,6 +320,7 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 			Utvecklingskort	&	Digilent Nexys3	\\
 			Temperatursensor	&	Maxim DS18S20	\\
 			Motstånd			&	4.7 k\ohm{}	\\
+			GSM-Modul			&	Emuleras med serieterminal\\
 			\hline
 		\end{tabularx}
 \end{table}
@@ -401,9 +402,10 @@ https://github.com/Cadynum/sommarstuga.git
 \begin{itemize}
 	\item Alla Komponenter för mätning och avläsning av temperatur från DS18S20 inkluside hjälpfunktioner.
 	\item Lött den korrekta DS18S20-konstruktionen på ett mönsterkort.
-	\item Visning av ett binärt tal på FPGAns 7-segmentsdisplay.
+	\item Visning av ett binärt tal på FPGA:ns 7-segmentdisplay.
 	\item Testning och verifikation av DS18S20 kontrollen.
-	\item Binär till BCD konverterare.
+	\item Binär till BCD konvertering.
+	\item Ascii utsrift av temperatur till AT-kommando.
 	\item Allt i rapporten som relaterar till temperatursensorn DS18S20 och 7-segmentsdisplayn.
 	\item Följande VHDL-moduler:
 	\begin{itemize}
