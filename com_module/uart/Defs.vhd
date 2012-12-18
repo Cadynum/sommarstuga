@@ -1,7 +1,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.ALL;
---use IEEE.NUMERIC_STD.all;
+use IEEE.NUMERIC_STD.all;
 
 -- ********************************************************************************
 -- Definitions file
@@ -53,7 +52,7 @@ package body Defs is
 	function char2std(arg : character)
 		return std_logic_vector is
 		begin
-			return std_logic_vector (conv_unsigned(char2int(arg),8));
+			return std_logic_vector (to_unsigned(char2int(arg),8));
 	end char2std;
 
 	function string_to_vector( s : string )
@@ -62,7 +61,7 @@ package body Defs is
 			variable r : std_logic_vector( s'length * 8 - 1 downto 0);
 		begin
 			for i in 1 to s'high loop
-				r(i * 8 - 1 downto (i - 1) * 8) := std_logic_vector( conv_unsigned( character'pos(s(i)) , 8 ) ) ;
+				r(i * 8 - 1 downto (i - 1) * 8) := std_logic_vector(to_unsigned( character'pos(s(i)) , 8 ) ) ;
 			end loop ;
 			return r ;
 	end function ;

@@ -1,7 +1,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.STD_LOGIC_ARITH.ALL;
---use IEEE.NUMERIC_STD.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
 library WORK;
 use WORK.DEFS.ALL;
@@ -18,7 +17,7 @@ entity At is
 	     getElement      : out STD_LOGIC;
 	     getTemp      : out STD_LOGIC;
 	-- data bus
-	     tempDataIn : in STD_LOGIC_VECTOR(7 downTo 0);
+	     tempDataIn : in SIGNED(7 downTo 0);
 	     elementDataOut : Out STD_LOGIC_VECTOR(3 downTo 0);
 	     elementDataIn : in STD_LOGIC_VECTOR(3 downTo 0);
 	-- com ports
@@ -34,17 +33,21 @@ Architecture Behavioral of At is
 	-- timer
 	signal timerEnable, timeOut : STD_LOGIC := '0';
 	signal counter : UNSIGNED(26 downTo 0) := "000000000000000000000000000";
-	constant timerVal : UNSIGNED(26 downTo 0) := baud_1;--"000000000000000000000001111";-- time out between bytes
+	constant timerVal : UNSIGNED(26 downTo 0) := baud_1;--"000000000000000000000000111";-- time out between bytes
 
 	-- state machines
-	type state_type is (WAIT_COMMAND, WAIT_GET, WAIT_SET, WAIT_EQUALS, SET_ELEM, GET_ELEM, GET_TEMP, WAIT_TEMP_DATA, WAIT_ELEM_DATA, SEND);
+	type state_type is (WAIT_COMMAND, WAIT_GET, WAIT_SET, WAIT_EQUALS, SET_ELEM, GET_ELEM, GET_TEMP, WAIT_TEMP_DATA, WAIT_ELEM_DATA, SEND_WL, SEND_WH);
 	signal state : state_type := WAIT_COMMAND;
 	
-	--
-	constant testString : CHARACTER_ARRAY := "test";
-	signal index : integer range 0 to 3 := 0;
-begin
+	-- 
+	constant testString : CHARACTER_ARRAY := "123456789";
+	signal index, toIndex : integer range 0 to 8 := 0;
+	signal isTemp : boolean := true;
 
+	-- buffers
+	signal elBuf : STD_LOGIC_VECTOR(3 downTo 0);
+	signal tempBuf : STD_LOGIC_VECTOR(7 downTo 0);
+begin
 
 	--*************************************************
 	STATE_PROCESS : process (clk, rst)
@@ -112,17 +115,24 @@ begin
 
 				when WAIT_TEMP_DATA =>
 					if (tempInAvail = '1') then
-						state <= SEND;
+						state <= SEND_WH;
 					end if;
 
 				when WAIT_ELEM_DATA =>
 					if (elementInAvail = '1') then
-						state <= SEND;
+						state <= SEND_WH;
 					end if;
 
-				when SEND =>
-					if (index = testString'high) then
-						state <= WAIT_COMMAND;
+				when SEND_WH =>
+					if (sendReady = '1') then
+						state <= SEND_WL;
+					end if;
+
+				when SEND_WL =>
+					if (index = toIndex) then
+						state <= WAIT_COMMAND;					
+					elsif (sendReady = '0') then
+						state <= SEND_WH;
 					end if;
 			end case;
 		end if;
@@ -155,23 +165,38 @@ begin
 
 				when WAIT_TEMP_DATA =>
 					if (tempInAvail = '1') then
+						isTemp <= true;
+						--tempBuf <= tempDataIn;
+						toIndex <= testString'high;
 --						byteOut <=  string_to_vector("temp:") & tempDataIn;
-						byteOut <= tempDataIn;						
+--						byteOut <= tempDataIn;						
 					end if;
 
 				when WAIT_ELEM_DATA =>
 					if (elementInAvail = '1') then
+						elBuf <= elementDataIn;
+						isTemp <= false;
+						toIndex <= elBuf'high;
 --						byteOut <= string_to_vector("elem:") & elementDataIn;
 --						byteOut <= '0' & '0' & '0' & '0' & elementDataIn;
+						
 					end if;
 
-				when SEND =>
-					if (index = testString'high) then
+				when SEND_WL =>
+					if (index = toIndex) then
 						index <= 0;
-					elsif (sendReady = '1') then
-						sendByte <= '1';
-						byteOut <= char2std (testString(index));
+					elsif (sendReady = '0') then
 						index <= index + 1;
+					end if;
+
+				when SEND_WH =>
+					if (sendReady = '1') then
+						sendByte <= '1';
+						if (isTemp) then
+							byteOut <= char2std (testString(index));
+						else
+							byteOut <= elBuf(index);
+						end if;
 					end if;
 				when others =>
 					--do nothing
