@@ -170,7 +170,7 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 	\advance\leftskip-3cm
 	\advance\rightskip-3cm
 	\includegraphics[width=15cm]{blockschema.eps}
-	\caption{Övergripande blockschema för huvudenheten.}
+	\caption{Övergripande blockschema för huvudenheten som visar alla styrsignaler inklusive datavägar mellan de olika blocken.}
 \end{figure}
 
 
@@ -207,29 +207,31 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 \end{figure}
 
 		
+		För att förtydliga skillnaden mellan delblock, tillstånd och databussar i nedanstående stycken är delblocken skrivna i \emph{kursiv text}, tillstånd i \textbf{fetstilt text} och databussar i \textbf{\emph{kursiv fetstilt text}}.\\
+
 		I \textbf{Com} ligger styrenheten och väntar på kommandon från delblocket \emph{Kommunikation}.
 		\\
 		Om en begäran att få veta inomhustemperaturen fås, kommer styrenheten att byta tillstånd till \textbf{Temp} och med hjälp av
-		en styrsignal meddela delblocket \emph{Temperatur} om att temperaturen ska inhämtas och skrivas till databussen.
+		en styrsignal meddela delblocket \emph{Temperatur} om att temperaturen ska inhämtas och skrivas till databussen \textbf{\emph{temp}}.
 		\\
 		I det fall en begäran fås om att ändra elementens status, dvs. slå av/på ett eller flera element, skriver delblocket \emph{Kommunikation}
-		den nya elementstatusen till databussen och sedan meddelas styrenheten om att ny status finns att läsa på databussen. Därefter
+		den nya elementstatusen till databussen \textbf{\emph{nyStatus}} och sedan meddelas styrenheten om att ny status finns att läsa på databussen \textbf{\emph{nyStatus}}. Därefter
 		ändras tillstånd till \textbf{Elem}.
 		\\
 		Om enbart information om elements aktuella status begärs, sätts styrenhetens styrsignaler till att meddela \emph{Element}
 		att enbart aktuella element status behöver skrivas till databussen samtidigt som en tillståndsövergång till \textbf{Elem} sker.
 		\\\\
-		I \textbf{Temp} väntar styenheten på kvittens från \emph{Temperatur} om att temperaturen skrivits till databussen
+		I \textbf{Temp} väntar styenheten på kvittens från \emph{Temperatur} om att temperaturen skrivits till databussen \textbf{\emph{temp}}
 		och går att läsa.
 		\\
 		När kvittens fåtts återgår styrenheten till tillståndet \textbf{Com}, samtidigt som en styrsignal meddelar delblocket \emph{Kommunikation}
-		att temperaturen nu finns att hämta på databussen.
+		att temperaturen nu finns att hämta på databussen \textbf{\emph{temp}}.
 		\\\\
 		I \textbf{Elem} väntar styrenheten på kvittens från delblocket \emph{Element} om att elementen har reglerats och/eller
-		att aktuell elementstatus finns på databussen.
+		att aktuell elementstatus finns på databussen\textbf{\emph{aktuellStatus}}.
 		\\
 		När kvittens fåtts återgår styrenheten till tillståndet \textbf{Com}, samtidigt som styrsignaler meddelar delblocket \emph{Kommunikation}
-		att elementen reglerats och/eller aktuell elementstatus finns att hämta på databussen.
+		att elementen reglerats och/eller aktuell elementstatus finns att hämta på databussen \textbf{\emph{aktuellStatus}}.
 		
 	\input{delblock_termometer.tex}
 	\subsection{Kommunikation}
@@ -320,7 +322,6 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 			Utvecklingskort	&	Digilent Nexys3	\\
 			Temperatursensor	&	Maxim DS18S20	\\
 			Motstånd			&	4.7 k\ohm{}	\\
-			GSM-Modul			&	Emuleras med serieterminal\\
 			\hline
 		\end{tabularx}
 \end{table}
@@ -402,10 +403,9 @@ https://github.com/Cadynum/sommarstuga.git
 \begin{itemize}
 	\item Alla Komponenter för mätning och avläsning av temperatur från DS18S20 inkluside hjälpfunktioner.
 	\item Lött den korrekta DS18S20-konstruktionen på ett mönsterkort.
-	\item Visning av ett binärt tal på FPGA:ns 7-segmentdisplay.
+	\item Visning av ett binärt tal på FPGAns 7-segmentsdisplay.
 	\item Testning och verifikation av DS18S20 kontrollen.
-	\item Binär till BCD konvertering.
-	\item Ascii utsrift av temperatur till AT-kommando.
+	\item Binär till BCD konverterare.
 	\item Allt i rapporten som relaterar till temperatursensorn DS18S20 och 7-segmentsdisplayn.
 	\item Följande VHDL-moduler:
 	\begin{itemize}
