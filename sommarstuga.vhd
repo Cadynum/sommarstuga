@@ -7,7 +7,9 @@ port (clk : in std_logic;
       lysdioder : out std_logic_vector(3 downto 0);
       dq : inout std_logic;
       segment : buffer std_ulogic_vector(7 downto 0);
-      an : buffer std_ulogic_vector(3 downto 0)      
+      an : buffer std_ulogic_vector(3 downto 0);
+      tx : out std_logic;
+      rx : in std_logic
       );
 end sommarstuga;
 
@@ -67,7 +69,18 @@ architecture behavioral of sommarstuga is
 	);
 	
 	compKommunikation : entity work.Com (
-	
+		clk => clk,
+		rst => reset,
+		tempInAvail => comHasTempOnDb,
+		elementInAvail => comHasElemStatusOnDb,
+		requestTemp => comWantTemp,
+		requestElement => comWantElemStatus,
+		elementOutAvail => comHasElemStatus,
+		tempIn => temp,
+		elementIn => aktuellStatus,
+		elementOut => nyStatus,
+		tx => tx,
+		rx => rx
 	);
 	
 	compTemperatur : entity work.ds18s20 (
@@ -86,6 +99,5 @@ architecture behavioral of sommarstuga is
 		an => an,
 		segment => segment
 	);
-	
 
 end behavioral;
