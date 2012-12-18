@@ -47,7 +47,8 @@ begin
                  comWantTemp,
                  comWantElemStatus,
                  comHasElemStatus,
-                 elemStatusNowOnDb)
+                 elemStatusNowOnDb,
+                 elemNewStatusDone)
     begin
         tempPutTempOnDb <= '0';
         comHasTempOnDb <= '0';
