@@ -73,9 +73,9 @@ begin
 	AT_P : process (clk, rst)
 	begin
 		if (rising_edge(clk)) then
-			if (rst = '1') then				-- se upp med synkron reset (asynkron tidigare)
+			if (rst = '1') then		
 				at_state <= WAIT_COMMAND;
-			else						-- ingen enable
+			else	
 				case at_state is
 					when WAIT_COMMAND => 
 						if(receive_state = RECEIVE_START) then
@@ -90,7 +90,7 @@ begin
 							dec_en <= '1';
 						elsif(decode_state = DECODE_TEST) then
 							dec_en <= '0';
-							at_state <= SEND_MODE;	-- **makes no sense**
+							at_state <= SEND_MODE;	
 						end if;
 
 					when SEND_MODE => -- send text mode
@@ -209,6 +209,7 @@ begin
 	atByteStreamOut <= memBus when (readWrite = '0') else "ZZZZZZZZ";
 
 
+--******************** Out signal processes ************************
 	OUTSIG_P : process (clk)
 	begin
 		if (rising_edge(clk)) then
@@ -216,11 +217,11 @@ begin
 			enable <= '0';	
 			sendByteOut <= '0';
 
--- ******************** At ************************************
-			if (at_state = WAIT_COMMAND) then	-- not using the separate process for at yet
+-- ******************** At *****************************************
+			if (at_state = WAIT_COMMAND) then	
 			end if;
 
--- ******************** Decode ************************************
+-- ******************** Decode *************************************
 			if(dec_en = '1') then
 				if (decode_state = DECODE_START) then
 					enable <= '1';
@@ -235,7 +236,7 @@ begin
 -- ******************** Encode ************************************
 
 
--- ******************** Receive *******************************
+-- ******************** Receive ***********************************
 			if (rec_en = '1') then
 				if (receive_state = RECEIVE_START) then				
 					address <= 0;
