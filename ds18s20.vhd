@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 use work.onewire.all;
 
 
-entity ds1820 is
+entity ds18s20 is
 	port	( clk, reset : in std_ulogic
 			; measure : in std_ulogic
 			; valid : buffer std_ulogic
@@ -13,7 +13,7 @@ entity ds1820 is
 			);
 end entity;
 
-architecture a of ds1820 is
+architecture a of ds18s20 is
 	type state_t is ( idle
 					, init1
 					, skiprom_convt

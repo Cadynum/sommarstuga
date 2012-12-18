@@ -3,10 +3,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.onewire.all;
 
-entity ds1820_test is
+entity ds18s20_test is
 end entity;
 
-architecture a of ds1820_test is
+architecture a of ds18s20_test is
 	signal clk, sensor : std_ulogic := '0';
 	signal reset : std_ulogic := '1';
 	signal DQ : std_logic;
@@ -14,7 +14,7 @@ architecture a of ds1820_test is
 	signal measure : std_ulogic := '1';
 begin
 	ds1820:
-	entity work.ds1820 port map
+	entity work.ds18s20 port map
 		( clk => clk
 		, reset => reset
 		, valid => open
