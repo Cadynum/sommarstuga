@@ -118,7 +118,7 @@ Kontrollen är uppbyggd av en tillståndsmaskin, se \autoref{fig:onewire_fsm}. V
 \subparagraph{Reset}
 Resetfasen korresponderar till $reset\rightarrow postreset\rightarrow presence1\rightarrow presence2\rightarrow ready$ i onewires tillståndsmaskin (\autoref{fig:onewire_fsm}).
 
-Vid FPGAns \emph{power on}, eller när den globala, asynkrona \signal{reset} signalen går från hög till låg kommer tillståndsmaskinen börja i \state{reset}. Initieringssekvensen för temperatursensorn DS18S20 kommer då inledas. Se \autoref{fig:ow_timings}. Om temperatursensorn svarar med en korrekt \emph{presence pulse} inom accepterade tidsintervall kommer onewire att försättas i tillstånd \state{ready} och invänta vidare kommandon. Vid felaktigt eller uteblivet svar kommer \signal{error} vara \high{} under en klockcykel. Tillståndsmaskinen kommer sedan återgå till \state{reset} och börja om initieringssekvensen.
+Vid FPGA:ns \emph{power on}, eller när den globala, asynkrona \signal{reset} signalen går från hög till låg kommer tillståndsmaskinen börja i \state{reset}. Initieringssekvensen för temperatursensorn DS18S20 kommer då inledas. Se \autoref{fig:ow_timings}. Om temperatursensorn svarar med en korrekt \emph{presence pulse} inom accepterade tidsintervall kommer onewire att försättas i tillstånd \state{ready} och invänta vidare kommandon. Vid felaktigt eller uteblivet svar kommer \signal{error} vara \high{} under en klockcykel. Tillståndsmaskinen kommer sedan återgå till \state{reset} och börja om initieringssekvensen.
 
 \begin{figure}[H]
 	\centering
