@@ -39,7 +39,10 @@ Architecture Behavioral of At is
 	-- state machines
 	type state_type is (WAIT_COMMAND, WAIT_GET, WAIT_SET, WAIT_EQUALS, SET_ELEM, GET_ELEM, GET_TEMP, WAIT_TEMP_DATA, WAIT_ELEM_DATA, SEND);
 	signal state : state_type := WAIT_COMMAND;
-
+	
+	--
+	constant testString : CHARACTER_ARRAY := "test";
+	signal index : integer range 0 to 3 := 0;
 begin
 
 
@@ -63,57 +66,62 @@ begin
 					
 				when WAIT_GET =>
 					timerEnable <= '1';
-					if (byteAvail = '1') then
+					if (timeOut = '1') then
+						state <= WAIT_COMMAND;
+					elsif (byteAvail = '1') then
 						if (byteIn = char2std('t')) then
 							state <= GET_TEMP;
 						elsif (byteIn = char2std('e')) then
 							state <= GET_ELEM;
 						end if;
-					elsif (timeOut = '1') then
-						state <= WAIT_COMMAND;
 					end if;
 
 				when WAIT_SET =>
 					timerEnable <= '1';
-					if (byteAvail = '1') then
+					if (timeOut = '1') then
+						state <= WAIT_COMMAND;
+					elsif (byteAvail = '1') then
 						if (byteIn = char2std('e')) then
 							state <= WAIT_EQUALS;
 						end if;
-					elsif (timeOut = '1') then
-						state <= WAIT_COMMAND;
 					end if;
 
 				when WAIT_EQUALS =>
 					timerEnable <= '1';
-					if (byteAvail = '1') then
+					if (timeOut = '1') then
+						state <= WAIT_COMMAND;
+					elsif (byteAvail = '1') then
 						if (byteIn = char2std('=')) then
 							state <= SET_ELEM;
 						end if;
-					elsif (timeOut = '1') then
-						state <= WAIT_COMMAND;
 					end if;
 
 				when SET_ELEM =>
-					if (byteAvail = '1') then
+					timerEnable <= '1';
+					if (timeOut = '1') then
 						state <= WAIT_COMMAND;
-					elsif (timeOut = '1') then
+					elsif (byteAvail = '1') then
 						state <= WAIT_COMMAND;
 					end if;
 
 				when GET_ELEM =>
 					state <= WAIT_ELEM_DATA;
+
 				when GET_TEMP =>
 					state <= WAIT_TEMP_DATA;
+
 				when WAIT_TEMP_DATA =>
 					if (tempInAvail = '1') then
 						state <= SEND;
 					end if;
+
 				when WAIT_ELEM_DATA =>
 					if (elementInAvail = '1') then
 						state <= SEND;
 					end if;
+
 				when SEND =>
-					if (sendReady = '1') then
+					if (index = testString'high) then
 						state <= WAIT_COMMAND;
 					end if;
 			end case;
@@ -122,6 +130,7 @@ begin
 
 -- ******************** Receive outsignals ***********************************
 	OUTSIGNAL_PROCESS : process (clk, rst)
+
 	begin
 		if (rst = '1') then
 			-- reset
@@ -153,12 +162,16 @@ begin
 				when WAIT_ELEM_DATA =>
 					if (elementInAvail = '1') then
 --						byteOut <= string_to_vector("elem:") & elementDataIn;
-						byteOut <= '0' & '0' & '0' & '0' & elementDataIn;						
+--						byteOut <= '0' & '0' & '0' & '0' & elementDataIn;
 					end if;
 
 				when SEND =>
-					if (sendReady = '1') then
+					if (index = testString'high) then
+						index <= 0;
+					elsif (sendReady = '1') then
 						sendByte <= '1';
+						byteOut <= char2std (testString(index));
+						index <= index + 1;
 					end if;
 				when others =>
 					--do nothing

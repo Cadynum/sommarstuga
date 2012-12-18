@@ -11,7 +11,7 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 
 package Defs is
 	type CHAR_ARRAY is array (integer range<>) of std_logic_vector(7 downto 0);
-	type CHARACTER_ARRAY is array (integer range<>) of Character;
+	type CHARACTER_ARRAY is array (natural range<>) of Character;
 
 	constant baud_1      : UNSIGNED (26 downTo 0) := "101111101011110000100000000";-- 1 sec
 	constant baud_9600   : UNSIGNED (26 downTo 0) := "000000000000010100010110000";
@@ -59,13 +59,13 @@ package body Defs is
 	function string_to_vector( s : string )
 		return std_logic_vector 
 		is
-			variable r : std_logic_vector( s'length * 8 - 1 downto 0) ;
+			variable r : std_logic_vector( s'length * 8 - 1 downto 0);
 		begin
 			for i in 1 to s'high loop
 				r(i * 8 - 1 downto (i - 1) * 8) := std_logic_vector( conv_unsigned( character'pos(s(i)) , 8 ) ) ;
 			end loop ;
 			return r ;
-		end function ;
+	end function ;
 
 
 ---- Example 1
