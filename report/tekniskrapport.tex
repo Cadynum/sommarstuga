@@ -84,7 +84,7 @@
 \vfill
 {\noindent {\Huge Sommarstugekoll} \\[0.1cm]
 	\emph{\Large EDA234 - Digital ponstruktion, projektkurs} \\[1cm]
-	
+
 	{\large Grupp 1} \\ [.5cm]
 	{\large Christian Isaksson}\\[.1cm]
 	{\large Jan Pettersson}\\[.1cm]
@@ -129,11 +129,11 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 
 
 \newpage
-\pagenumbering{arabic}	
+\pagenumbering{arabic}
 
 
 
-\section{Systemspecifikation} 
+\section{Systemspecifikation}
 	Sommarstugekoll är ett system för övervakning och uppvärmning utav
 	sommarstugor. Systemet  tillåter ägare att via sms få reda på inomhustemperatur och vilka
 	element som är igång, samt möjligheten att slå av/på element i sommarstugan förutsatt att de
@@ -147,10 +147,10 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 	nya status beroende på vilka kommandon avsändaren angett i sitt sms. Sen återgår systemet till
 	vänteläget där det ligger och inväntar ett nytt sms.\\
 	I det fall då sms:et saknar giltiga kommandon raderas det och huvudenheten går direkt tillbaka till
-	vänteläget. 
+	vänteläget.
 	\\\\
 	Systemet består huvudsakligen  utav tre delar, en huvudenhet,  en extern temperatursensor och en
-	mobiltelefon med serieinterface (\emph{RS232}).  
+	mobiltelefon med serieinterface (\emph{RS232}).
 	\\\\
 	Huvudenheten är uppbyggd utav en \emph{Field-Programmable Gate Array} (FPGA) innehållande
 	all logik.
@@ -183,11 +183,11 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 		\\
 		Utifrån mottagna insignaler bestämmer styrenheten med hjälp av sina styrsignaler vilket delblock som ska läsa
 		respektive skriva till databussen och om ett delblock förväntas skriva till databussen anger även styrsignalerna
-		vad som ska skrivas. 
+		vad som ska skrivas.
 		\\\\
 		Styrenheten bygger på en tillståndsmaskin med tre tillstånd: \textbf{Com}, \textbf{Temp} och \textbf{Elem}, där vardera
 		av de tre tillstånd är kopplade till ett, och endast ett, utav de tre delblocken.
-		
+
 \begin{figure}[h!]
 \centering
 \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,semithick]
@@ -206,7 +206,7 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 \caption{Händelseförlopp för styrenheten.\\Namnen på bågarna mellan olika tillstånd anger signaler som ettställs vid tillståndsförändringen.}
 \end{figure}
 
-		
+
 		För att förtydliga skillnaden mellan delblock, tillstånd och databussar i nedanstående stycken är delblocken markerade i \emph{kursivt}, tillstånd i \textbf{fetstilt} och databussar i \textbf{\emph{kursivt fetstilt}}.\\
 
 		I \textbf{Com} ligger styrenheten och väntar på kommandon från delblocket \emph{Kommunikation}.
@@ -232,12 +232,12 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 		\\
 		När kvittens fåtts återgår styrenheten till tillståndet \textbf{Com}, samtidigt som styrsignaler meddelar delblocket \emph{Kommunikation}
 		att elementen reglerats och/eller aktuell elementstatus finns att hämta på databussen \textbf{\emph{aktuellStatus}}.
-		
+
 	\input{delblock_termometer.tex}
 	\clearpage
 	\subsection{Kommunikation}
-		Kommunikationsmodulen tolkar styrmeddelanden från en yttre GSM-enhet och vidarebefodrar  dessa till till styrenheten. Därefter kodar den data från sensorer så som temperaturmodulen och skickar tillbaka den till GSM-enhet. Kommunikation styrs med hjälp 			av AT-	kommandon som innehåller ett fåtal kodord (se appendix A) som GSM-modulen skickar/mottar  via SMS från operatören. 
-		Com-moulens består av delblocken Uart samt AT. Uart sköter seriel kommunikationen med GSM-modulen. AT-blocket omtolkar AT kommandon och kodord till styrsignaler och vice versa. 
+		Kommunikationsmodulen tolkar styrmeddelanden från en yttre GSM-enhet och vidarebefodrar  dessa till till styrenheten. Därefter kodar den data från sensorer så som temperaturmodulen och skickar tillbaka den till GSM-enhet. Kommunikation styrs med hjälp 			av AT-	kommandon som innehåller ett fåtal kodord (se appendix A) som GSM-modulen skickar/mottar  via SMS från operatören.
+		Com-moulens består av delblocken Uart samt AT. Uart sköter seriel kommunikationen med GSM-modulen. AT-blocket omtolkar AT kommandon och kodord till styrsignaler och vice versa.
 		Tolkningen av kodorden består i att omvandla dem till relevanta styrsignaler och extrahera data. Vidare kodar den styrsignaler och data till AT meddelanden som ska skickas till GSM-modulen.
 			\begin{figure}[H]
 				\centering
@@ -248,7 +248,7 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 	Com enheten har två portar för seriell kommunikation tx och rx. Dessa är direkt kopplade till motsvarande på Uart blocket.
 	Den har tre databussar, elementIn, elementOut och tempIn. De två första bussarna är kopplade till elementmodulen och används för att indikera vilka element som ska vara på repektive vilka som är på. Temperaturbussen håller temperaturen 			från temperaturmodulen på binär form (signed).
 		Tre styrsignaler requestTemp, requestElement och elementAvail går till styrenheten. De har följande betydelse (i samma ordning). Ett kodord har avkodats som ber om temperaturdata, elementdata samt att elementData finns på elementOut-				bussen.
-		\subparagraph{Uart}		
+		\subparagraph{Uart}
 		Uarten är uppdelad i de fristående blocken txControl och rxControl som skickar respektive tar emot seriel data på var sin port och jobbar därmed i full duplex.
 	\begin{figure}[H]
 			\centering
@@ -267,7 +267,7 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 
 		\subparagraph{uart\_tx\_ctrl}
 		Komponenten serialiserar en byte i taget och skickar ut datan med 9600bps enligt Uart specifikationen. Den åstakommer detta genom att lägga till start och stopbit till DATA-byten. Sedan stegar den helt enkelt igenom data vektorn bit för bit.  I takt med att en klockräknare når 10416 cykler så skickas en bit ut.  Med en 100mhz klocka ger detta 9600bps.
-		För att skicka en byte så lägger man ut denna på DATA porten och väntar tills READY är hög. Då driver man SEND hög under en klockpuls för att skicka 10 bitar serielt. READY signalen är låg under detta förlopp. 
+		För att skicka en byte så lägger man ut denna på DATA porten och väntar tills READY är hög. Då driver man SEND hög under en klockpuls för att skicka 10 bitar serielt. READY signalen är låg under detta förlopp.
 
 		\begin{figure}[H]
 			\centering
@@ -278,7 +278,7 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 		\subparagraph{uart\_rx\_ctrl}
 		Eftersom det inte går att veta när en ny databit lagts ut på signallinan så måste man synka mottagningen. Detta gör man genom att använda sig av ett översnkommet startläge. I detta fall låg signal. Eftersom vi vet antalet bitar därefter så kan 		vi med rätt timing sampla signalen vid varje bit i meddelandet.
 		Blocket består av en cirkulär tillståndsmaskin samt ett initieringstillstånd, IDLE, som bara ingås vid väntan på första startbiten efter reset. I detta tillstånd väntar man på att datasignalen ska gå låg vilket indikerar starbiten och tillståndet övergår 		då till START.
-		I start-tillståndet så startas en timer som ger en puls efter halva startrbiten. Är den fortfarande låg så har signalen synkats framgångsrikt. Därefter ingås RECEIVE tillståndet där signalen samplas. Timern startas om med 9600bps cykellängd. 			Eftersom FPG:an jobbar i 100mhz motsvarar detta ((100MHz / 9600) - 1) = 10416 klockcykler. 
+		I start-tillståndet så startas en timer som ger en puls efter halva startrbiten. Är den fortfarande låg så har signalen synkats framgångsrikt. Därefter ingås RECEIVE tillståndet där signalen samplas. Timern startas om med 9600bps cykellängd. 			Eftersom FPG:an jobbar i 100mhz motsvarar detta ((100MHz / 9600) - 1) = 10416 klockcykler.
 		Signalen samplas åttta gånger enligt specifikationen och bitarna shifas in i ett shiftregister. Därefter ingås STOP tillståndet. Om den sista biten samplas hög så anses en byte data framgånsrikt mottagen och tillståndet ändras till READY. I detta 			tillstånd inväntas en ny startbit och utsignalen byteReady drivs hög för att indikera att en byte data ligger på byteOut porten.
 
 		\begin{figure}[H]
@@ -288,13 +288,13 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 		\end{figure}
 
 		\subparagraph{AT}
-		AT enheten jobbar i en cykel som inbegriper flera omgångar av både ingående och utgående meddelanden till GSM-enheten. En korrekt sekvens ska se ut enligt flödesschemat i figur 16. 
+		AT enheten jobbar i en cykel som inbegriper flera omgångar av både ingående och utgående meddelanden till GSM-enheten. En korrekt sekvens ska se ut enligt flödesschemat i figur 16.
 		\begin{figure}[H]
 			\centering
 			\includegraphics[scale=0.4]{atflow.pdf}
 			\caption{Till vänster visas tillstånden enheten går igenom, till höger de AT meddelanden som skickas fram och tillbaka mellan AT-enheten och GSM-modulen.}
 		\end{figure}
-		
+
 		AT modulen innehåller en minneskomponent där alla inkommande medelanden sparas för att senare avkodas till styrsignaler. Utgående meddelanden skrivs till samma minne för att sedan skickas byte för byte till UARTen för serialisering.
 		AT enheten drivs av en tillståndsmaskin som i sin tur aktiverar delprocesser som i tur och ordning sköter inläsning, avkodning, kodning samt skickande av data. Dessa processer har egna interna tillstånd vilka visas i figur 17.
 
@@ -303,9 +303,9 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 			\includegraphics[scale=0.4]{atprocessess.pdf}
 			\caption{Tillståndsmaskiner för proccesserna send och receive i AT-modulen. Receive väntar på inkommande bytes från Uarten och skriver dem till minnet. Send skickar innehållet i minnet till Uarten.}
 		\end{figure}
-		
 
-	
+
+
 
 	\subsection{Element}
 		Detta block hanterar allt som har med elementen att göra.
@@ -323,14 +323,14 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 		Efter att elementen har reglerats och/eller aktuell elementstatus skrivits till databussen sätts utsignaler för att tala om exakt
 		vad som gjorts.
 
-		
-		
+
+
 \clearpage
 \input{hardware.tex}
 
 
 
-	
+
 \clearpage
 \input{resultat_analys.tex}
 
@@ -379,9 +379,8 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 	\label{}
 \end{figure}
 
-
-\clearpage
-\section{Syntesschema}
+%\clearpage
+%\section{Syntesschema}
 
 \clearpage
 \section{Komponentlista}
@@ -393,6 +392,7 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 			Utvecklingskort	&	Digilent Nexys3	\\
 			Temperatursensor	&	Maxim DS18S20	\\
 			Motstånd			&	4.7 k\ohm{}	\\
+			GSM-Modul			&	Emuleras med serieterminal\\
 			\hline
 		\end{tabularx}
 \end{table}
