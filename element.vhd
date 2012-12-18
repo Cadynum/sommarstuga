@@ -8,8 +8,8 @@ port (clk : in std_logic;
       returnStatus : in std_logic;
       statusOnDb : out std_logic;
       statusUpdated : out std_logic;
-      input : in std_logic_vector(3 downto 0);
-      output : out std_logic_vector(3 downto 0);
+      nyStatus : in std_logic_vector(3 downto 0);
+      aktuellStatus : out std_logic_vector(3 downto 0);
       element : out std_logic_vector(3 downto 0)
       );
 end element;
@@ -20,17 +20,17 @@ begin
     process(clk, reset) begin
         if(reset = '1') then
             statusOnDb <= '0';
-            output <= "0000";
+            aktuellStatus <= "0000";
             status <= "0000";
             element <= "0000";
         elsif(rising_edge(clk)) then
             statusOnDb <= '0';
             element <= status;
             if(getNewStatus = '1') then
-                status <= input;
+                status <= nyStatus;
                 statusUpdated <= '1';
             elsif(returnStatus = '1') then
-                output <= status;
+                aktuellStatus <= status;
                 statusOnDb <= '1';
             end if;
         end if;

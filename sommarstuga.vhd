@@ -61,8 +61,8 @@ architecture behavioral of sommarstuga is
 		returnStatus => elemPutStatusOnDb,
 		statusOnDb => elemStatusNowOnDb,
 		statusUpdated => elemNowStatusDone,
-		input => nyStatus,
-		output => aktuellStatus,
+		nyStatus => nyStatus,
+		aktuellStatus => aktuellStatus,
 		element => lysdioder
 	);
 	
