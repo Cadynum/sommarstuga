@@ -53,7 +53,6 @@ begin
         tempPutTempOnDb <= '0';
         comHasTempOnDb <= '0';
         comHasElemStatusOnDb <= '0';
-        comHasElemStatus <= '0';
         elemHasStatusOnDb <= '0';
         elemPutStatusOnDb <= '0';
         

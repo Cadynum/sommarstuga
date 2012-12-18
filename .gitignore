@@ -2,3 +2,5 @@
 *.cf
 *.swp
 *-eps-converted-to.pdf
+*.aux
+*.toc

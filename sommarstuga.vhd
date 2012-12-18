@@ -1,5 +1,6 @@
 library ieee;
 use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
 
 entity sommarstuga is
 port (clk : in std_logic;
@@ -15,32 +16,32 @@ end sommarstuga;
 
 architecture behavioral of sommarstuga is
 	-- Databussar.
-	signal temp : std_logic_vector(7 downto 0);
+	signal temp : signed(7 downto 0);
 	signal nyStatus : std_logic_vector(3 downto 0);
 	signal aktuellStatus : std_logic_vector(3 downto 0);
 	
 	-- Temperatur.
-	signal tempPutTempOnDb : out std_logic;
-	signal tempNowOnDb : in std_logic;
+	signal tempPutTempOnDb : std_logic;
+	signal tempNowOnDb : std_logic;
 	      
 	-- Kommunikation.
-	signal comHasTempOnDb : out std_logic;
-	signal comHasElemStatusOnDb : out std_logic;
-	signal comWantTemp : in std_logic;
-	signal comWantElemStatus : in std_logic;
-	signal comHasElemStatus : in std_logic;
+	signal comHasTempOnDb : std_logic;
+	signal comHasElemStatusOnDb : std_logic;
+	signal comWantTemp : std_logic;
+	signal comWantElemStatus : std_logic;
+	signal comHasElemStatus : std_logic;
 	      
 	-- Element.
-	signal elemHasStatusOnDb : out std_logic;
-	signal elemPutStatusOnDb : out std_logic;
-	signal elemStatusNowOnDb : in std_logic;
-	signal elemNewStatusDone : in std_logic;
+	signal elemHasStatusOnDb : std_logic;
+	signal elemPutStatusOnDb : std_logic;
+	signal elemStatusNowOnDb : std_logic;
+	signal elemNewStatusDone : std_logic;
 
 	begin
 		
 	-- Mappningar av komponenter.
 	
-	compStyrenhet : entity work.styrenhet map (
+	compStyrenhet : entity work.styrenhet port map (
 		clk => clk,
 		reset => reset,
 		tempPutTempOnDb => tempPutTempOnDb,
@@ -56,19 +57,19 @@ architecture behavioral of sommarstuga is
 		elemNewStatusDone => elemNewStatusDone
 	);
 	
-	compElement : entity work.element map (
+	compElement : entity work.element port map (
 		clk => clk,
 		reset => reset,
 		getNewStatus => elemHasStatusOnDb,
 		returnStatus => elemPutStatusOnDb,
 		statusOnDb => elemStatusNowOnDb,
-		statusUpdated => elemNowStatusDone,
+		statusUpdated => elemNewStatusDone,
 		nyStatus => nyStatus,
 		aktuellStatus => aktuellStatus,
 		element => lysdioder
 	);
 	
-	compKommunikation : entity work.Com (
+	compKommunikation : entity work.Com port map (
 		clk => clk,
 		rst => reset,
 		tempInAvail => comHasTempOnDb,
@@ -83,7 +84,7 @@ architecture behavioral of sommarstuga is
 		rx => rx
 	);
 	
-	compTemperatur : entity work.ds18s20 (
+	compTemperatur : entity work.ds18s20 port map(
 		clk => clk,
 		reset => reset,
 		measure => '1',
@@ -92,7 +93,7 @@ architecture behavioral of sommarstuga is
 		temperature => temp
 	);
 	
-	compSjuSegmentDisplay : entity work.segment_temperature (
+	compSjuSegmentDisplay : entity work.segment_temperature port map (
 		clk => clk,
 		reset => reset,
 		rawd => temp,
