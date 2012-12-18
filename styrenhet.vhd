@@ -20,7 +20,8 @@ port (-- Klocka och reset
       -- Element (ELEM)
       elemHasStatusOnDb : out std_logic;
       elemPutStatusOnDb : out std_logic;
-      elemStatusNowOnDb : in std_logic
+      elemStatusNowOnDb : in std_logic;
+      elemNewStatusDone : in std_logic
      );
 end styrenhet;
 
@@ -48,11 +49,13 @@ begin
                  comHasElemStatus,
                  elemStatusNowOnDb)
     begin
-        tempNowOnDb <= '0';
-        comWantTemp <= '0';
-        comWantElemStatus <= '0'
+        tempPutTempOnDb <= '0';
+        comHasTempOnDb <= '0';
+        comHasElemStatusOnDb <= '0';
         comHasElemStatus <= '0';
-        elemStatusNowOnDb <= '0';
+        elemHasStatusOnDb <= '0';
+        elemPutStatusOnDb <= '0';
+        
         case currentState is
             when s0 => -- Kommunikation (Väntetillstånd)
                 if(comWantTemp = '1') then -- temperatur begärd.
@@ -63,7 +66,7 @@ begin
                     nextState <= s2;
                 elsif(comHasElemStatus = '1') then -- ny status för element finns.
                     elemHasStatusOnDb <= '1';
-                    nextState <= s0;
+                    nextState <= s2;
                 else -- ingenting begärt.
                     nextState <= s0;
                 end if;
@@ -80,6 +83,8 @@ begin
                 if(elemStatusNowOnDb = '1') then
                     comHasElemStatusOnDb <= '1';
                     nextState <= s0;
+                elsif elemNewStatusDone = '1' then
+                	nextState <= s0;
                 else
                     nextState <= s2;
                 end if;
