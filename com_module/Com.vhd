@@ -21,9 +21,9 @@ entity Com is
 	      elementOutAvail : out STD_LOGIC;
 	    -- bus in
 	      tempIn : in STD_LOGIC_VECTOR(7 downTo 0);
-	      elementIn : in STD_LOGIC_VECTOR(2 downTo 0);
+	      elementIn : in STD_LOGIC_VECTOR(3 downTo 0);
 	    -- bus out
-	      elementOut : out STD_LOGIC_VECTOR(2 downTo 0);
+	      elementOut : out STD_LOGIC_VECTOR(3 downTo 0);
 	    -- com ports
 	      tx : out STD_LOGIC;
 	      rx : in STD_LOGIC);
@@ -35,19 +35,36 @@ Architecture Behavioral of Com is
     signal rxByte, txByte, tempInRegister : STD_LOGIC_VECTOR(7 downTo 0);
     signal rxReady, txReady : STD_LOGIC;
     signal txSend : STD_LOGIC;
-    signal elementOutRegister, elementInRegister : STD_LOGIC_VECTOR(2 downTo 0);
+    signal elementOutRegister, elementInRegister : STD_LOGIC_VECTOR(3 downTo 0);
     signal smsRequestTemp, smsRequestElement, smsHasElement : STD_LOGIC;
+
+    signal debugIn : STD_LOGIC := '0';
+    signal debugOut : STD_LOGIC := '0';
+    signal debugData : STD_LOGIC_VECTOR(3 downTo 0) := "0000";
 
 begin
     comp_uart : entity work.uart generic map (baudrate => 9600) port map (clk => clk, rst => rst,
 									  txByte => txByte, txSend => txSend, tx => tx,
 									  rx => rx, rxReady => rxReady, rxByte => rxByte, txReady => txReady);
 
-    comp_at : entity work.At generic map (memSize => 80) port map (clk => clk, rst => rst, tempInAvail => tempInAvail, elementInAvail => elementInAvail,
-								     setElement => elementOutAvail, getElement => requestElement, getTemp => requestTemp,
-								     tempDataIn => tempIn, elementDataIn => elementIn, elementDataOut => elementOut,
-								     messageAvail => rxReady, atByteStreamIn => rxByte, 
-								     sendByteOut => txSend, atByteStreamOut => txByte, sendReady => txReady);
+    comp_at : entity work.At port map (clk => clk, rst => rst, tempInAvail => tempInAvail, elementInAvail => debugIn,
+								     setElement => elementOutAvail, getElement => debugOut, getTemp => requestTemp,
+								     tempDataIn => tempIn, elementDataIn => debugData, elementDataOut => elementOut,
+								     byteAvail => rxReady, byteIn => rxByte, 
+								     sendByte => txSend, byteOut => txByte, sendReady => txReady);
+
+	TEST_PROCESS : process
+	begin
+		if (rst = '1') then
+		elsif (rising_edge(clk)) then
+			debugIn <= '0';
+			debugData <= "0000";
+			if (debugOut = '1') then
+				debugData <= "0110";
+				debugIn <= '1';
+			end if;
+		end if;
+	end process;
 
 --    P0 : Process
 --    begin
