@@ -36,12 +36,13 @@ Architecture Behavioral of At is
 	constant timerVal : UNSIGNED(26 downTo 0) := baud_1;--"000000000000000000000000111";-- time out between bytes
 
 	-- state machines
-	type state_type is (WAIT_COMMAND, WAIT_GET, WAIT_SET, WAIT_EQUALS, WAIT_ELEM, SET_ELEM, GET_ELEM, GET_TEMP, WAIT_TEMP_CONVERT, WAIT_TEMP_DATA, WAIT_ELEM_DATA, SEND_WL, SEND_WH);
+	type state_type is (WAIT_COMMAND, WAIT_GET, WAIT_SET, WAIT_EQUALS, SET_ELEM, GET_ELEM, GET_TEMP, WAIT_TEMP_CONVERT, WAIT_TEMP_DATA, WAIT_ELEM_DATA, WAIT_ELEM_HIGH, WAIT_ELEM_LOW, SEND_WL, SEND_WH);
 	signal state : state_type := WAIT_COMMAND;
 	
 	-- 
 	constant testString : CHARACTER_ARRAY := "123456789";
-	signal index, toIndex : integer range 0 to 5;
+	constant testAscii : CHAR_ARRAY := (x"31",x"32", x"33", x"34", x"35");
+	signal index, toIndex, elemCount : integer range 0 to 5;
 --	signal elemCount : integer range 0 to 3 := 0;
 	signal isTemp : boolean := true;
 
@@ -102,13 +103,15 @@ begin
 						state <= WAIT_COMMAND;
 					elsif (byteAvail = '1') then
 						if (byteIn = char2std('=')) then
-							state <= WAIT_ELEM;
+							state <= WAIT_ELEM_HIGH;
 						end if;
 					end if;
 
 				when WAIT_ELEM_HIGH =>
 					timerEnable <= '1';
-					if (byteAvail = '1') then
+					if (elemCount = 3) then
+						state <= SET_ELEM;
+					elsif (byteAvail = '1') then
 						state <= WAIT_ELEM_LOW;
 					elsif (timeOut = '1') then
 						state <= WAIT_COMMAND;
@@ -178,14 +181,15 @@ begin
 				when WAIT_ELEM_HIGH =>
 					if (byteAvail = '1') then						
 						if (byteIn = char2std('1')) then
-							elBuf <= '1' & elbuf(0 to 2);
+							elBuf <= '1' & elbuf(2 downto 0);
+						else
+							elBuf <= '0' & elbuf(2 downto 0);
 						end if;
 					end if;
+
 				when WAIT_ELEM_LOW =>
-					if (byteAvail = '0') then						
-						if (byteIn = char2std('1')) then
-							elBuf <= "0001";
-						end if;
+					if (byteAvail = '0') then	
+						elemCount <= elemCount + 1;
 					end if;					
 
 				when SET_ELEM =>
@@ -232,6 +236,7 @@ begin
 					sendByte <= '1';
 						if (isTemp) then
 							byteOut <= ascii_mem(index);
+--							byteOut <= testAscii(index);
 						else
 							byteOut <= "0011000" & elBuf(index);
 						end if;
@@ -241,72 +246,6 @@ begin
 			end case;
 		end if;
 	end process;
-
-
-
-
-
---	SEND_P : process (clk, rst, snd_en)
---	begin
---		if (rising_edge(clk)) then
---			if (rst = '1' OR snd_en = '1') then
---				send_state <= SEND_START;
---			else
---				case send_state is
---
---				when SEND_START =>
---					send_state <= SEND_W_H;
---
---				when SEND_W_H =>			
---					if (address > addressHigh) then
---						send_state <= SEND_DONE;
---					elsif (sendReady = '1') then
---						send_state <= SEND;
---					end if;
---
---				when SEND =>
---					send_state <= SEND_W_L;
---
---				when SEND_W_L =>
---					if (sendReady = '0') then
---						send_state <= SEND_W_H;		
---					end if;				
---
---				when SEND_DONE =>
---					-- terminal state, stuck here until snd_en, no outsignals
---				end case;
---			end if;
---		end if;
---	end process;
---	
---
---
-----********************** send outsignals *********************************
---
---			if (snd_en = '1') then
---				if (send_state = SEND_START) then
---					address <= 0;
---				end if;
---
---				if (send_state = SEND_W_H) then
---					if (sendReady = '1') then
---						readWrite <= '0';
---						enable <= '1';
---					end if;
---				end if;
---
---				if (send_state = SEND) then
---					sendByteOut <= '1';
---				end if;
---
---				if (send_state = SEND_W_L) then
---					if (sendReady = '0') then
---						address <= address + 1;
---					end if;
---				end if;
---			end if;
---		end if;
---	end process;
 
 	TIMER_P : process (clk)
 	begin

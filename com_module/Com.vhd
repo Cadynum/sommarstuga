@@ -45,7 +45,7 @@ begin
 
     comp_at : entity work.At port map (clk => clk, rst => rst, tempInAvail => tempInAvail, elementInAvail => elementInAvail,
 								     setElement => smsHasElement, getElement => smsRequestElement, getTemp => smsRequestTemp,
-								     tempDataIn => tempIn, elementDataIn => elementIn, elementDataOut => elementOutRegister,
+								     tempDataIn => tempInRegister, elementDataIn => elementInRegister, elementDataOut => elementOutRegister,
 								     byteAvail => rxReady, byteIn => rxByte, 
 								     sendByte => txSend, byteOut => txByte, sendReady => txReady);
 

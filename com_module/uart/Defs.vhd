@@ -9,7 +9,7 @@ use IEEE.NUMERIC_STD.all;
 -- ********************************************************************************
 
 package Defs is
-	type CHAR_ARRAY is array (integer range<>) of std_logic_vector(7 downto 0);
+	type CHAR_ARRAY is array (natural range<>) of std_logic_vector(7 downto 0);
 	type CHARACTER_ARRAY is array (natural range<>) of Character;
 
 	constant baud_1      : UNSIGNED (26 downTo 0) := "101111101011110000100000000";-- 1 sec
