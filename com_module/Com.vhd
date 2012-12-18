@@ -38,67 +38,48 @@ Architecture Behavioral of Com is
     signal elementOutRegister, elementInRegister : STD_LOGIC_VECTOR(3 downTo 0);
     signal smsRequestTemp, smsRequestElement, smsHasElement : STD_LOGIC;
 
-    signal debugIn : STD_LOGIC := '0';
-    signal debugOut : STD_LOGIC := '0';
-    signal debugData : STD_LOGIC_VECTOR(3 downTo 0) := "0000";
-
 begin
     comp_uart : entity work.uart generic map (baudrate => 9600) port map (clk => clk, rst => rst,
 									  txByte => txByte, txSend => txSend, tx => tx,
 									  rx => rx, rxReady => rxReady, rxByte => rxByte, txReady => txReady);
 
-    comp_at : entity work.At port map (clk => clk, rst => rst, tempInAvail => tempInAvail, elementInAvail => debugIn,
-								     setElement => elementOutAvail, getElement => debugOut, getTemp => requestTemp,
-								     tempDataIn => tempIn, elementDataIn => debugData, elementDataOut => elementOut,
+    comp_at : entity work.At port map (clk => clk, rst => rst, tempInAvail => tempInAvail, elementInAvail => elementInAvail,
+								     setElement => elementOutAvail, getElement => requestElement, getTemp => requestTemp,
+								     tempDataIn => tempIn, elementDataIn => elementIn, elementDataOut => elementOut,
 								     byteAvail => rxReady, byteIn => rxByte, 
 								     sendByte => txSend, byteOut => txByte, sendReady => txReady);
 
-	TEST_PROCESS : process
-	begin
-		if (rst = '1') then
-		elsif (rising_edge(clk)) then
-			debugIn <= '0';
-			debugData <= "0000";
-			if (debugOut = '1') then
-				debugData <= "0110";
-				debugIn <= '1';
-			end if;
-		end if;
-	end process;
-
---    P0 : Process
---    begin
---        if rst = '1' then
---            requestTemp <= '0';
---            requestElement <= '0';
---            elementOutAvail <= '0';
---        
---        else
---            wait until clk = '1';                 -- Vänta på positiv klockflank
---            
---            if smsRequestTemp = '1' then          -- Om sms:et innehåller begäran om inomhustemperatur.
---                requestTemp <= '1';                -- Ettställ flagga.
---            end if;
---            
---            if smsRequestElement = '1' then       -- Om sms:et innehåller begäran om elementens status.
---                requestElement <= '1';             -- Ettställ flagga.
---            end if;
---            
---            if smsHasElement = '1' then           -- Om sms:et innehåller ny elementstatus.
---                elementOut <= elementOutRegister; -- Flytta ny elementstatus från register till databussen.
---                elementOutAvail <= '1';           -- Ettställ flagga.
---            end if;
---            
---            if tempInAvail = '1' then             -- Om ny temperatur finns på databussen.
---                requestTemp <= '0';               -- Nollställ flagga.
---                tempInRegister <= tempIn;         -- Flytta temperaturen från databussen till internt register.
---            end if;
---            
---            if elementInAvail = '1' then          -- Om ny elementstatus finns på databussen.
---                requestElement <= '0';            -- Nollställ flagga.
---                elementInRegister <= elementIn;   -- Flytta elementstatus från databussen till internt register.
---            end if;
---            
---        end if;
---    end process;
+   P0 : Process
+   begin
+       if (rst = '1') then
+           requestTemp <= '0';
+           requestElement <= '0';
+           elementOutAvail <= '0';
+       
+       elsif (rising_edge(clk)) then         
+           if smsRequestTemp = '1' then          --Om sms:et innehåller begäran om inomhustemperatur.
+               requestTemp <= '1';                --Ettställ flagga.
+           end if;
+           
+           if smsRequestElement = '1' then       --Om sms:et innehåller begäran om elementens status.
+               requestElement <= '1';             --Ettställ flagga.
+           end if;
+           
+           if smsHasElement = '1' then          -- Om sms:et innehåller ny elementstatus.
+               elementOut <= elementOutRegister; --Flytta ny elementstatus från register till databussen.
+               elementOutAvail <= '1';           --Ettställ flagga.
+           end if;
+           
+           if tempInAvail = '1' then            -- Om ny temperatur finns på databussen.
+               requestTemp <= '0';               --Nollställ flagga.
+               tempInRegister <= tempIn;         --Flytta temperaturen från databussen till internt register.
+           end if;
+           
+           if elementInAvail = '1' then         -- Om ny elementstatus finns på databussen.
+               requestElement <= '0';            --Nollställ flagga.
+               elementInRegister <= elementIn;   --Flytta elementstatus från databussen till internt register.
+           end if;
+           
+       end if;
+   end process;
 end Behavioral;

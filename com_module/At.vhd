@@ -34,7 +34,7 @@ Architecture Behavioral of At is
 	-- timer
 	signal timerEnable, timeOut : STD_LOGIC := '0';
 	signal counter : UNSIGNED(26 downTo 0) := "000000000000000000000000000";
-	constant timerVal : UNSIGNED(26 downTo 0) := "000000000000000000000001111";-- time out between bytes
+	constant timerVal : UNSIGNED(26 downTo 0) := baud_1;--"000000000000000000000001111";-- time out between bytes
 
 	-- state machines
 	type state_type is (WAIT_COMMAND, WAIT_GET, WAIT_SET, WAIT_EQUALS, SET_ELEM, GET_ELEM, GET_TEMP, WAIT_TEMP_DATA, WAIT_ELEM_DATA, SEND);
