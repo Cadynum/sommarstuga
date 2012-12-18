@@ -13,7 +13,7 @@ entity At is
 	     tempInAvail       : in STD_LOGIC;
 	     elementInAvail    : in STD_LOGIC;
 	-- decoded ctrl signal out
-	     setElement      : out STD_LOGIC;
+	     setElement      : out STD_LOGIC := '0';
 	     getElement      : out STD_LOGIC;
 	     getTemp      : out STD_LOGIC;
 	-- data bus
@@ -36,14 +36,14 @@ Architecture Behavioral of At is
 	constant timerVal : UNSIGNED(26 downTo 0) := baud_1;--"000000000000000000000000111";-- time out between bytes
 
 	-- state machines
-	type state_type is (WAIT_COMMAND, WAIT_GET, WAIT_SET, WAIT_EQUALS, SET_ELEM, GET_ELEM, GET_TEMP, WAIT_TEMP_CONVERT, WAIT_TEMP_DATA, WAIT_ELEM_DATA, WAIT_ELEM_HIGH, WAIT_ELEM_LOW, SEND_WL, SEND_WH);
+	type state_type is (WAIT_COMMAND, WAIT_GET, WAIT_SET, WAIT_EQUALS, SET_ELEM, GET_ELEM, GET_TEMP, WAIT_TEMP_CONVERT, WAIT_TEMP_DATA, WAIT_ELEM_DATA, WAIT_ELEM_HIGH, WAIT_ELEM_LOW, WAIT_ELEM_FIRST, SEND_WL, SEND_WH);
 	signal state : state_type := WAIT_COMMAND;
 	
 	-- 
 	constant testString : CHARACTER_ARRAY := "123456789";
 	constant testAscii : CHAR_ARRAY := (x"31",x"32", x"33", x"34", x"35");
-	signal index, toIndex, elemCount : integer range 0 to 5;
---	signal elemCount : integer range 0 to 3 := 0;
+	signal index, toIndex: integer range 0 to 5 := 0;
+	signal elemCount : integer range 0 to 3 := 0;
 	signal isTemp : boolean := true;
 
 	-- buffers
@@ -98,31 +98,30 @@ begin
 					end if;
 
 				when WAIT_EQUALS =>
-					timerEnable <= '1';
+					timerEnable <= '0';
 					if (timeOut = '1') then
 						state <= WAIT_COMMAND;
 					elsif (byteAvail = '1') then
 						if (byteIn = char2std('=')) then
-							state <= WAIT_ELEM_HIGH;
+							state <= WAIT_ELEM_FIRST;
 						end if;
 					end if;
 
-				when WAIT_ELEM_HIGH =>
-					timerEnable <= '1';
-					if (elemCount = 3) then
-						state <= SET_ELEM;
-					elsif (byteAvail = '1') then
-						state <= WAIT_ELEM_LOW;
-					elsif (timeOut = '1') then
-						state <= WAIT_COMMAND;
-					end if;
-
-				when WAIT_ELEM_LOW =>
-					timerEnable <= '1';
+				when WAIT_ELEM_FIRST =>
 					if (byteAvail = '0') then
 						state <= WAIT_ELEM_HIGH;
-					elsif (timeOut = '1') then
-						state <= WAIT_COMMAND;
+					end if;
+
+				when WAIT_ELEM_HIGH =>
+					if (byteAvail = '1') then
+						state <= WAIT_ELEM_LOW;
+					end if;
+					
+				when WAIT_ELEM_LOW =>
+					if (elemCount = 3) then
+						state <= SET_ELEM;
+					elsif (byteAvail = '0') then
+						state <= WAIT_ELEM_HIGH;
 					end if;
 
 				when SET_ELEM =>
@@ -179,23 +178,26 @@ begin
 
 			case state is
 				when WAIT_ELEM_HIGH =>
-					if (byteAvail = '1') then						
-						if (byteIn = char2std('1')) then
-							elBuf <= '1' & elbuf(2 downto 0);
-						else
-							elBuf <= '0' & elbuf(2 downto 0);
+					if (byteAvail = '1') then
+						if (byteIn = char2std('0')) then
+							elBuf(elemCount) <= '0';
+						elsif (byteIn = char2std('1')) then
+							elBuf(elemCount) <= '1';
+						else 
+							elBuf <= "1001";
 						end if;
 					end if;
 
 				when WAIT_ELEM_LOW =>
-					if (byteAvail = '0') then	
+					if (elemCount = 3) then
+						elemCount <= 0;
+					elsif (byteAvail = '0') then
 						elemCount <= elemCount + 1;
-					end if;					
+					end if;
 
 				when SET_ELEM =>
 					elementDataOut <=  elBuf;
 					setElement <= '1';
-
 
 				when GET_ELEM =>
 					getElement <= '1';
@@ -212,6 +214,7 @@ begin
 				when WAIT_TEMP_CONVERT =>
 					if (ascii_ready = '1') then
 						toIndex <= ascii_mem_len;
+						index <= 0;
 					end if;
 
 				when WAIT_ELEM_DATA =>
@@ -235,7 +238,20 @@ begin
 					if (sendReady = '1') then
 					sendByte <= '1';
 						if (isTemp) then
-							byteOut <= ascii_mem(index);
+							if (index = 0) then
+								byteOut <= ascii_mem(0);
+							elsif (index = 1) then 
+								byteOut <= ascii_mem(1);
+							elsif (index = 2) then 
+								byteOut <= ascii_mem(2);
+							elsif (index = 3) then
+								byteOut <= ascii_mem(3);
+							elsif (index = 4) then
+								byteOut <= ascii_mem(4);
+							else
+								byteOut <= x"45";
+							end if;
+--							byteOut <= ascii_mem(index);
 --							byteOut <= testAscii(index);
 						else
 							byteOut <= "0011000" & elBuf(index);
