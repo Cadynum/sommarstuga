@@ -4,7 +4,10 @@ use IEEE.std_logic_1164.all;
 entity sommarstuga is
 port (clk : in std_logic;
       reset : in std_logic;
-      lysdioder : out std_logic_vector(3 downto 0)
+      lysdioder : out std_logic_vector(3 downto 0);
+      dq : inout std_logic;
+      segment : buffer std_ulogic_vector(7 downto 0);
+      an : buffer std_ulogic_vector(3 downto 0)      
       );
 end sommarstuga;
 
@@ -30,7 +33,9 @@ architecture behavioral of sommarstuga is
 	signal elemPutStatusOnDb : out std_logic;
 	signal elemStatusNowOnDb : in std_logic;
 	signal elemNewStatusDone : in std_logic;
-	
+
+	begin
+		
 	-- Mappningar av komponenter.
 	
 	compStyrenhet : entity work.styrenhet map (
@@ -56,13 +61,31 @@ architecture behavioral of sommarstuga is
 		returnStatus => elemPutStatusOnDb,
 		statusOnDb => elemStatusNowOnDb,
 		statusUpdated => elemNowStatusDone,
-		input => nyStatus,
-		output => aktuellStatus,
+		nyStatus => nyStatus,
+		aktuellStatus => aktuellStatus,
 		element => lysdioder
 	);
 	
 	compKommunikation : entity work.Com (
 	
 	);
+	
+	compTemperatur : entity work.ds18s20 (
+		clk => clk,
+		reset => reset,
+		measure => '1',
+		valid => tempNowOnDb,
+		DQ => dq,
+		temperature => temp
+	);
+	
+	compSjuSegmentDisplay : entity work.segment_temperature (
+		clk => clk,
+		reset => reset,
+		rawd => temp,
+		an => an,
+		segment => segment
+	);
+	
 
 end behavioral;
