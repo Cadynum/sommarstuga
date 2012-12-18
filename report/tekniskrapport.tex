@@ -408,18 +408,18 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 			\hline
 			\textbf{Pin} & \textbf{Beskrivning} & \textbf{Från} & \textbf{Till}\\
 			\hline
-			T17 & Katod för segment A & FPGA & 7-segmentsdisplayen\\
-			T18 & Katod för segment B & FPGA & 7-segmentsdisplayen\\
-			U17 & Katod för segment C & FPGA & 7-segmentsdisplayen\\
-			U18 & Katod för segment D & FPGA & 7-segmentsdisplayen\\
-			M14 & Katod för segment E & FPGA & 7-segmentsdisplayen\\
-			N14 & Katod för segment F & FPGA & 7-segmentsdisplayen\\
-			L14 & Katod för segment G & FPGA & 7-segmentsdisplayen\\
-			M13 & Katod för segment DP & FPGA & 7-segmentsdisplayen\\
-			N16 & Gemensam anod för 7-seg AN0 & FPGA & 7-segmentsdisplayen\\
-			N15 & Gemensam anod för 7-seg AN1 & FPGA & 7-segmentsdisplayen\\
-			P18 & Gemensam anod för 7-seg AN2 & FPGA & 7-segmentsdisplayen\\
-			P17 & Gemensam anod för 7-seg AN3 & FPGA & 7-segmentsdisplayen\\
+			T17 & Katod för segment A & FPGA & 7-segmentdisplayen\\
+			T18 & Katod för segment B & FPGA & 7-segmentdisplayen\\
+			U17 & Katod för segment C & FPGA & 7-segmentdisplayen\\
+			U18 & Katod för segment D & FPGA & 7-segmentdisplayen\\
+			M14 & Katod för segment E & FPGA & 7-segmentdisplayen\\
+			N14 & Katod för segment F & FPGA & 7-segmentdisplayen\\
+			L14 & Katod för segment G & FPGA & 7-segmentdisplayen\\
+			M13 & Katod för segment DP & FPGA & 7-segmentdisplayen\\
+			N16 & Gemensam anod för 7-seg AN0 & FPGA & 7-segmentdisplayen\\
+			N15 & Gemensam anod för 7-seg AN1 & FPGA & 7-segmentdisplayen\\
+			P18 & Gemensam anod för 7-seg AN2 & FPGA & 7-segmentdisplayen\\
+			P17 & Gemensam anod för 7-seg AN3 & FPGA & 7-segmentdisplayen\\
 			U16 & Aktivera lysdiod LD0 & FPGA & LED0\\
 			V16 & Aktivera lysdiod LD1 & FPGA & LED1\\
 			U15 & Aktivera lysdiod LD2 & FPGA & LED2\\
@@ -477,10 +477,11 @@ https://github.com/Cadynum/sommarstuga.git
 \begin{itemize}
 	\item Alla Komponenter för mätning och avläsning av temperatur från DS18S20 inkluside hjälpfunktioner.
 	\item Lött den korrekta DS18S20-konstruktionen på ett mönsterkort.
-	\item Visning av ett binärt tal på FPGAns 7-segmentsdisplay.
+	\item Visning av ett binärt tal på FPGA:ns 7-segmentdisplay.
 	\item Testning och verifikation av DS18S20 kontrollen.
 	\item Binär till BCD konverterare.
-	\item Allt i rapporten som relaterar till temperatursensorn DS18S20 och 7-segmentsdisplayn.
+	\item Felanalys-delen i rapporten
+	\item Allt i rapporten som relaterar till temperatursensorn DS18S20 och 7-segmentdisplayen.
 	\item Följande VHDL-moduler:
 	\begin{itemize}
 %		\item \fullref{sec:code:onewire.vhd}
