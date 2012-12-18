@@ -118,12 +118,12 @@ Kontrollen är uppbyggd av en tillståndsmaskin, se \autoref{fig:onewire_fsm}. V
 \subparagraph{Reset}
 Resetfasen korresponderar till $reset\rightarrow postreset\rightarrow presence1\rightarrow presence2\rightarrow ready$ i onewires tillståndsmaskin (\autoref{fig:onewire_fsm}).
 
-Vid FPGAns \emph{power on}, eller när den globala, asynkrona \signal{reset} signalen går från hög till låg kommer tillståndsmaskinen börja i \state{reset}. Initieringssekvensen för temperatursensorn DS18S20 kommer då inledas. Se \autoref{fig:ow_timings}. Om temperatursensorn svarar med en korrekt \emph{presence pulse} inom accepterade tidsintervall kommer onewire att försättas i tillstånd \state{ready} och invänta vidare kommandon. Vid felaktikt eller uteblivet svar kommer \signal{error} vara \high{} under en klockcykel. Tillståndsmaskinen kommer sedan återgå till \state{reset} och börja om initieringssekvensen.
+Vid FPGAns \emph{power on}, eller när den globala, asynkrona \signal{reset} signalen går från hög till låg kommer tillståndsmaskinen börja i \state{reset}. Initieringssekvensen för temperatursensorn DS18S20 kommer då inledas. Se \autoref{fig:ow_timings}. Om temperatursensorn svarar med en korrekt \emph{presence pulse} inom accepterade tidsintervall kommer onewire att försättas i tillstånd \state{ready} och invänta vidare kommandon. Vid felaktigt eller uteblivet svar kommer \signal{error} vara \high{} under en klockcykel. Tillståndsmaskinen kommer sedan återgå till \state{reset} och börja om initieringssekvensen.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{reset_presence.eps}
-	\caption{Timings för 1-wire resetsekvens}
+	\caption{Tidsspecifikation för 1-wire resetsekvens}
 	\label{fig:ow_timings}
 \end{figure}
 
@@ -133,7 +133,7 @@ Skrivfasen korresponderar till $ready\rightarrow write\_init\rightarrow write\ri
 
 För att påbörja en skrivning sätts \signal{control} till \signal{ctl\_write} när \signal{ready='1'}.
 \signal{slot\_max} bitar kommer då skrivas till sensorn.
-1-wire protokollet anvander \emph{write slots} för att skriva bitar till sensorn. Flera bitar skrivs genom flera efterföljande write slots.
+1-wire protokollet använder \emph{write slots} för att skriva bitar till sensorn. Flera bitar skrivs genom flera efterföljande write slots.
 
 En write slot börjar med att buss-mastern driver DQ låg 1--15\us. Sensorn kommer sampla värdet på bussen 15--60\us efter att DQ gick från hög till låg. Efter varje write slot behövs >1\us återhämtningstid.
 
@@ -147,8 +147,8 @@ Läsfasen korresponderar till $ready\rightarrow read\_init\rightarrow read\right
 
 För att påbörja en läsning sätts \signal{control} till \signal{ctl\_read} när \signal{ready='1'}.
 \signal{slot\_max} bitar kommer då läsas från sensorn.
-1-wire protokollet anvander \emph{read slots} för att skriva bitar till sensorn. Flera bitar skrivs genom flera efterföljande read slots.
-En read slot intitieras alltid av mastern genom att driva DQ låg i 1\us{} < \Tx{} < 15\us{}. Sensorn kommer efter att DQ gått från \high{} $\rightarrow$ \low{} lägga ut \high{} eller \low{} på DQ. Data är giltig upp till 15\us{} efter det att master initierar read slot.
+1-wire protokollet använder \emph{read slots} för att skriva bitar till sensorn. Flera bitar skrivs genom flera efterföljande read slots.
+En read slot initieras alltid av mastern genom att driva DQ låg i 1\us{} < \Tx{} < 15\us{}. Sensorn kommer efter att DQ gått från \high{} $\rightarrow$ \low{} lägga ut \high{} eller \low{} på DQ. Data är giltig upp till 15\us{} efter det att master initierar read slot.
 Se \autoref{fig:rwslots}.
 
 
@@ -156,26 +156,26 @@ Se \autoref{fig:rwslots}.
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{write_slot.eps}
-\caption{Write och read slots timings för \low{} respektive \high{}.}
+\caption{Write och read slots tidsspecifikation för \low{} respektive \high{}.}
 \label{fig:rwslots}
 \end{figure}
 
 
 
 %%% 7-segmentsdisplay %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{7-Segmentsdisplay}\label{sec:7seg}
-Delblocket ansvarar för att visa ett 8 bitars binärt tal på tvåkomplementsform där bit 7--1 är heltalsdelen och bit 0 decimaldelen på en 7-segmentsdisplay med basen 10.
+\subsection{7-Segmentdisplay}\label{sec:7seg}
+Delblocket ansvarar för att visa ett 8 bitars binärt tal på tvåkomplementsform där bit 7--1 är heltalsdelen och bit 0 decimaldelen på en 7-segmentdisplay med basen 10.
 
 Det finns stöd för att visa tal mellan -99 -- 999, med en decimalsiffra som antingen är .0 eller .5. Det är tillräckligt för temperatursensorn som är specifierad mellan $-75 -- 125 \pm5$.
 \subsubsection{segment\_temperature}
 
 \paragraph{Interface}
-Komponenten tar ett binärt tal som input och ger utsignalerna till 7-segmentsdisplayerna.
+Komponenten tar ett binärt tal som input och ger utsignalerna till 7-segmentdisplayerna.
 
 <bild>
 
 \paragraph{Implementation}
-De fyra fysiska 7-segmentsdisplayerna har en gemensam databuss. Varje display har även en enable signal. Komponenten växlar mellan att visa de olika displayerna med 1kHz, vilket för ögat upplevs som att alla lyser konstant.
+De fyra fysiska 7-segmentdisplayerna har en gemensam databuss. Varje display har även en enable signal. Komponenten växlar mellan att visa de olika displayerna med 1kHz, vilket för ögat upplevs som att alla lyser konstant.
 \paragraph{bcd}\label{sec:bcd}
 Funktion som gör om ett binärt tal utan tecken till bcd-form. ``Double Dabble'' algoritmen används internt i form utav ett kombinatoriskt nät.
 
