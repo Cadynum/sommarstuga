@@ -32,7 +32,7 @@ VHDL koden är uppbyggd efter tvåprocessmodellen, med en klockad och en kombina
 	\hline
 	\textbf{Master} & \textbf{Data} & \textbf{Kommentar} \\
 	\hline
-	
+
 	\Tx & Reset & Reset puls.\\
 	\Rx & Presence & Sensorn svarar med en presence puls.\\
 	\Tx & 0x44 & Skip ROM command. Eftersom det bara finns en sensor på bussen skippas identifiering.\\
@@ -43,7 +43,7 @@ VHDL koden är uppbyggd efter tvåprocessmodellen, med en klockad och en kombina
 	\Tx & 0x44 & Skip ROM command. Eftersom det bara finns en sensor på bussen skippas identifiering.\\
 	\Tx & 0xBE & Read scratchpad command. Läser sensorns interna minne.  \\
 	\Rx & <1 byte> & Läser första byten vilket är temperaturen.\\
-	
+
 	\hline
 \end{tabularx}
 \caption{Kontrollsekvens för mätning och avläsning av temperatur}
@@ -52,7 +52,7 @@ VHDL koden är uppbyggd efter tvåprocessmodellen, med en klockad och en kombina
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth]{ds18s20_fsm.eps}
+	\includegraphics[width=\textwidth]{ds1820_state.pdf}
 	\caption{Tillståndsmaskin för delblocket DS18S20}
 	\label{fig:ds18s20_fsm}
 \end{figure}
@@ -109,7 +109,7 @@ Kontrollen är uppbyggd av en tillståndsmaskin, se \autoref{fig:onewire_fsm}. V
 
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.97\textheight]{onewire_fsm.eps}
+\includegraphics[height=0.97\textheight]{onewire_state.pdf}
 \caption{Tillståndsmaskin för delblocket onewire}
 \label{fig:onewire_fsm}
 \end{figure}
@@ -172,7 +172,11 @@ Det finns stöd för att visa tal mellan -99 -- 999, med en decimalsiffra som an
 \paragraph{Interface}
 Komponenten tar ett binärt tal som input och ger utsignalerna till 7-segmentdisplayerna.
 
-<bild>
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.5]{segment_sch.pdf}
+\caption{Delblocket segment-temperature}
+\end{figure}
 
 \paragraph{Implementation}
 De fyra fysiska 7-segmentdisplayerna har en gemensam databuss. Varje display har även en enable signal. Komponenten växlar mellan att visa de olika displayerna med 1kHz, vilket för ögat upplevs som att alla lyser konstant.
@@ -184,5 +188,4 @@ Funktion som gör om ett binärt tal utan tecken till bcd-form. ``Double Dabble'
 \centering
 \includegraphics[width=\textwidth]{segment.eps}
 \caption{7-segments display}
-\label{}
 \end{figure}
