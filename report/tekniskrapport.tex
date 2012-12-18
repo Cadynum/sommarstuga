@@ -232,7 +232,81 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 		att elementen reglerats och/eller aktuell elementstatus finns att hämta på databussen.
 		
 	\input{delblock_termometer.tex}
+	\clearpage
 	\subsection{Kommunikation}
+		Kommunikationsmodulen tolkar styrmeddelanden från en yttre GSM-enhet och vidarebefodrar  dessa till till styrenheten. Dessutom kodar och viderebefodra den data från sensor modulerna tillbaka till GSM-enhet. Kommunikation styrs med hjälp 			av AT-	kommandon (se appendix) och innehåller ett fåtal kodord (se appendix) som GSM-modulen skickar/mottar  via SMS från operatören. 
+		Com-moulens består av delblocken UART samt AT. UART sköter seriel kommunikationen med GSM-modulen. AT-blocket ser tilla att AT protokollet följs samt omtolkar AT kommandon och kodord till styrsignaler och vice versa. 
+		Tolkningen av kodorden består i att omvandla dem till relevanta styrsignaler och data signaler. Vidare kodar den styrsignaler och data till AT meddelanden som ska skickas till GSM-modulen.
+		Topp-logiken i modulen har inget tillstånd utan drivs utav tillståndet i AT blocket. Dess funktion är endast att koppla samman blocken med omgivande moduler så som styrenheten.
+			\begin{figure}[H]
+				\centering
+				\includegraphics[scale=0.4]{comschematic.pdf}
+				\caption{kommunikations modul}
+			\end{figure}
+
+		Com enheten har två portar för seriell kommunikation tx och rx. Dessa är direkt kopplade till motsvarande på UART blocket.
+		Den har tre databussar, elementIn, elementOut och tempIn. De två första bussarna är kopplade till elementmodulen och används för att indikera vilka element som ska vara på repektive vilka som är på. Temperaturbussen håller temperaturen 			från temperaturmodulen på binär form (signed).
+		Tre styrsignaler requestTemp, requestElement och elementAvail går till styrenheten och meddlar den, i nämnd ordning,  att ett kodord har avkodats som ber om temperaturdata, elementdata respektive att elementData finns på elementOut-				bussen.
+
+		\subparagraph{UART}
+		
+		Uarten är uppdelad i de fristående blocken txControl och rxControl som skickar respektive tar emot seriel data på var sin port och jobbar därmed i full duplex. 
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.4]{uartschematic.pdf}
+			\caption{Uart modul för seriekommunikation}
+		\end{figure}
+		kommunikationen sker enligt följande specifikation.
+		Datan skickas med 10 bitar i taget där den första biten är en sk starbit (låg) och den sista är stopbiten (hög). Därimellan skickas åtta databitar. Ingen paritetskontroll används. Bitarna skickas med 9600bps vilket innebär att det tar ca 1042us 				mellan startbitens positiva flank och stopbitens negativa flank.
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.4]{uartsignal.pdf}
+			\caption{Varje skickad byte ska följa specifikationen}
+		\end{figure}
+
+
+
+		\subparagraph{uart\_tx\_ctrl}
+		Komponenten serialiserar en byte i taget och skickar ut datan bit för bit med 9600bps enligt UART specifikationen. Den åstakommer detta genom att helt enkelt stega igenom data vektorn bit i takt med att en klockräknare når 10416 cykler som 			med 100mhz klocka ger 9600bps.
+		För att skicka en byte så lägger man ut denna på DATA porten och väntar tills READY är hög. Då driver man SEND hög under en klockpuls för att skicka 10 bitar serielt. READY signalen är låg under detta förlopp. 
+
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.4]{txschematic.pdf}
+			\caption{Uart modul för seriekommunikation}
+		\end{figure}
+
+		\subparagraph{uart\_rx\_ctrl}
+		Eftersom det inte går att veta när en ny databit lagts ut på signallinan så måste man synka mottagningen. Detta gör man genom att använda sig av ett översnkommet startläge. I detta fall låg signal. Eftersom vi vet antalet bitar därefter så kan 		vi med rätt timing sampla signalen vid varje bit i meddelandet.
+		Blocket består av en cirkulär tillståndsmaskin samt ett initieringstillstånd, IDLE, som bara ingås vid väntan på första startbiten efter reset. I detta tillstånd väntar man på att datasignalen ska gå låg vilket indikerar starbiten och tillståndet övergår 		då till START.
+		I start-tillståndet så startas en timer som ger en puls efter halva startrbiten. Är den fortfarande låg så har signalen synkats framgångsrikt. Därefter ingås RECEIVE tillståndet där signalen samplas. Timern startas om med 9600bps cykellängd. 			Eftersom FPG:an jobbar i 100mhz motsvarar detta ((100MHz / 9600) - 1) = 10416 klockcykler. 
+		Signalen samplas åttta gånger enligt specifikationen och bitarna shifas in i ett shiftregister. Därefter ingås STOP tillståndet. Om den sista biten samplas hög så anses en byte data framgånsrikt mottagen och tillståndet ändras till READY. I detta 			tillstånd inväntas en ny startbit och utsignalen byteReady drivs hög för att indikera att en byte data ligger på byteOut porten.
+
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.7]{rxmachine.png}
+			\caption{State only changes when timing=1. timing speed chnages according to state.  sync works as a toggle reset of the timing.}
+		\end{figure}
+
+		\subparagraph{AT}
+		AT enheten jobbar i en cykel som inbegriper flera omgångar av både ingående och utgående meddelanden till GSM-enheten. En korrekt sekvens ska se ut enligt flödesschemat i figur 16. 
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.6]{atflow.png}
+			\caption{Schemat innehåller tillstånden enheten går igenom samt de AT meddelanden som skickas fram och tillbaka mellan AT-enheten och GSM-modulen.}
+		\end{figure}
+
+		AT modulen innehåller en minneskomponent där alla inkommande medelanden sparas för att senare avkodas till styrsignaler. Utgående meddelanden skrivs till samma minne för att sedan skickas byte för byte till UART:en för serialisering.
+		AT enheten drivs av en tillståndsmaskin som i sin tur aktiverar delprocesser som i tur och ordning sköter inläsning, avkodning, kodning samt skickande av data. Dessa processer har egna interna tillstånd vilka visas i figur 17.
+
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.5]{atprocessess.png}
+			\caption{Tillståndsmaskiner för proccesserna send och receive i AT-modulen}
+		\end{figure}
+
+
+	
 
 	\subsection{Element}
 		Detta block hanterar allt som har med elementen att göra.

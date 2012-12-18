@@ -20,15 +20,19 @@
 \contentsline {paragraph}{Interface}{11}{section*.18}
 \contentsline {paragraph}{Implementation}{11}{section*.19}
 \contentsline {paragraph}{bcd}{11}{section*.20}
-\contentsline {subsection}{\numberline {3.4}Kommunikation}{11}{subsection.3.4}
-\contentsline {subsection}{\numberline {3.5}Element}{11}{subsection.3.5}
-\contentsline {section}{\numberline {4}H\IeC {\r a}rdvara}{13}{section.4}
-\contentsline {subsection}{\numberline {4.1}Digilent Nexys3 - FPGA}{13}{subsection.4.1}
-\contentsline {subsection}{\numberline {4.2}DS18S20 - Temperatursensor}{13}{subsection.4.2}
-\contentsline {section}{\numberline {5}Resultat och diskussion}{15}{section.5}
-\contentsline {subsection}{\numberline {5.1}Resultat}{15}{subsection.5.1}
-\contentsline {subsection}{\numberline {5.2}Felanalys}{15}{subsection.5.2}
-\contentsline {subsection}{\numberline {5.3}Diskussion}{15}{subsection.5.3}
+\contentsline {subsection}{\numberline {3.4}Kommunikation}{12}{subsection.3.4}
+\contentsline {subparagraph}{UART}{13}{section*.23}
+\contentsline {subparagraph}{uart\_tx\_ctrl}{14}{section*.26}
+\contentsline {subparagraph}{uart\_rx\_ctrl}{15}{section*.28}
+\contentsline {subparagraph}{AT}{17}{section*.30}
+\contentsline {subsection}{\numberline {3.5}Element}{19}{subsection.3.5}
+\contentsline {section}{\numberline {4}H\IeC {\r a}rdvara}{21}{section.4}
+\contentsline {subsection}{\numberline {4.1}Digilent Nexys3 - FPGA}{21}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}DS18S20 - Temperatursensor}{21}{subsection.4.2}
+\contentsline {section}{\numberline {5}Resultat och diskussion}{23}{section.5}
+\contentsline {subsection}{\numberline {5.1}Resultat}{23}{subsection.5.1}
+\contentsline {subsection}{\numberline {5.2}Felanalys}{23}{subsection.5.2}
+\contentsline {subsection}{\numberline {5.3}Diskussion}{23}{subsection.5.3}
 \contentsline {section}{\numberline {A}Kommandon}{i}{appendix.A}
 \contentsline {section}{\numberline {B}Signallista}{i}{appendix.B}
 \contentsline {subsection}{\numberline {B.1}DS18S20}{i}{subsection.B.1}
