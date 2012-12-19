@@ -50,12 +50,12 @@ Architecture Behavioral of At is
 	signal elBuf : STD_LOGIC_VECTOR(3 downTo 0);
 
 	signal ascii_go, ascii_ready : std_ulogic;
-	signal ascii_mem : char_array(0 to 5);
-	signal ascii_mem_len : integer range 0 to 5;
-
+	signal ascii_chr : asciichr;
+	signal ascii_chr_max : integer range 0 to 5;
+--	signal ascii_chr_sel : integer range 0 to 5;
 begin
 	comp_bcdascii : entity work.bcdascii port map (clk => clk, reset => rst, rawd => tempDataIn, go => ascii_go,
-						       ready => ascii_ready, mem => ascii_mem, mem_len => ascii_mem_len);
+						       ready => ascii_ready, chr => ascii_chr, chr_max => ascii_chr_max, chr_sel => index);
 
 	--*************************************************
 	STATE_PROCESS : process (clk, rst)
@@ -213,7 +213,7 @@ begin
 
 				when WAIT_TEMP_CONVERT =>
 					if (ascii_ready = '1') then
-						toIndex <= ascii_mem_len;
+						toIndex <= ascii_chr_max;
 						index <= 0;
 					end if;
 
@@ -223,7 +223,7 @@ begin
 						isTemp <= false;
 						toIndex <= elBuf'high;
 --						byteOut <= string_to_vector("elem:") & elementDataIn;
-						byteOut <= '0' & '0' & '0' & '0' & elementDataIn;
+--						byteOut <= '0' & '0' & '0' & '0' & elementDataIn;
 						
 					end if;
 
@@ -238,21 +238,8 @@ begin
 					if (sendReady = '1') then
 					sendByte <= '1';
 						if (isTemp) then
-							if (index = 0) then
-								byteOut <= ascii_mem(0);
-							elsif (index = 1) then 
-								byteOut <= ascii_mem(1);
-							elsif (index = 2) then 
-								byteOut <= ascii_mem(2);
-							elsif (index = 3) then
-								byteOut <= ascii_mem(3);
-							elsif (index = 4) then
-								byteOut <= ascii_mem(4);
-							else
-								byteOut <= x"45";
-							end if;
---							byteOut <= ascii_mem(index);
---							byteOut <= testAscii(index);
+								byteOut <= ascii_chr;
+--								ascii_chr_sel <= index;
 						else
 							byteOut <= "0011000" & elBuf(index);
 						end if;
