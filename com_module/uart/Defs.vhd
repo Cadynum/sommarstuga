@@ -18,28 +18,12 @@ package Defs is
 	constant baud_19200  : UNSIGNED (26 downTo 0) := "000000000000001010001011000"; -- 9600 / 2
 	constant baud_76800  : UNSIGNED (26 downTo 0) := "000000000000000010100010110"; -- 9600 / 8 = 1302
 
--- ********************************************************************************
--- type <new_type> is
---  record
---    <type_name>        : std_logic_vector( 7 downto 0);
---    <type_name>        : std_logic;
--- end record;
---
--- Declare constants
---
--- constant <constant_name>		: time := <time_unit> ns;
--- constant <constant_name>		: integer := <value;
---
--- Declare functions and procedure
---
--- function <function_name>  (signal <signal_name> : in <type_declaration>) return <type_declaration>;
--- procedure <procedure_name> (<type_declaration> <constant_name>	: in <type_declaration>);
---
-
 	function char2int (arg : character) return natural;
 	function char2std (arg : character) return std_logic_vector;
 	function string_to_vector (s : string) return std_logic_vector;
-
+	
+	function chr2vec (c : character) return asciichr;
+	function str2ca(str : string) return char_array;
 
 end Defs;
 
@@ -68,30 +52,17 @@ package body Defs is
 	end function ;
 
 
----- Example 1
---  function <function_name>  (signal <signal_name> : in <type_declaration>  ) return <type_declaration> is
---    variable <variable_name>     : <type_declaration>;
---  begin
---    <variable_name> := <signal_name> xor <signal_name>;
---    return <variable_name>; 
---  end <function_name>;
-
----- Example 2
---  function <function_name>  (signal <signal_name> : in <type_declaration>;
---                         signal <signal_name>   : in <type_declaration>  ) return <type_declaration> is
---  begin
---    if (<signal_name> = '1') then
---      return <signal_name>;
---    else
---      return 'Z';
---    end if;
---  end <function_name>;
-
----- Procedure Example
---  procedure <procedure_name>  (<type_declaration> <constant_name>  : in <type_declaration>) is
---    
---  begin
---    
---  end <procedure_name>;
- 
+	function chr2vec (c : character) return asciichr is
+	begin
+		return asciichr(to_unsigned(character'pos(c), 8));
+	end function;
+	
+	function str2ca(str : string) return char_array is
+		variable ca : char_array(str'low-1 to str'high-1);
+	begin
+		for i in str'range loop
+			ca(i-1) := chr2vec(str(i));
+		end loop;
+		return ca;
+	end function; 
 end Defs;
