@@ -3,6 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.Defs.char_array;
 use work.Defs.asciichr;
+use work.bcdascii_p.all;
 
 entity bcdascii_test is
 end entity;
@@ -13,11 +14,11 @@ architecture a of bcdascii_test is
 	signal ready : std_ulogic;
 	signal go : std_ulogic;
 	signal rawd : signed(7 downto 0) := "10000000";
-	signal mem : char_array(0 to 5);
-	signal mem_len : integer range 0 to 5;
+	signal mem : char_array(0 to 100);
+	signal mem_len : bcdbuf_t;
 	signal chr : asciichr;
-	signal chr_max : integer range 0 to 5;
-	signal chr_sel : integer range 0 to 5;
+	signal chr_max : bcdbuf_t;
+	signal chr_sel : bcdbuf_t;
 	
 	function caToString (din : char_array; len : natural) return string is
 		variable dout : string(1 to len);
@@ -41,7 +42,7 @@ begin
 			go <= '0';
 			wait until ready = '1';
 			
-			for jj in 0 to 5 loop
+			for jj in 0 to chr_max loop
 				chr_sel <= jj;
 				wait until clk'event;
 				mem(jj) <= chr;

@@ -49,8 +49,13 @@ architecture a of bcdascii is
 	constant post_string : char_array := str2ca("C\r\n");
 	
 begin
+
+				
 	chr_max <= pre_string'length + cnt + post_string'length;
-	chr <= mem(chr_sel-pre_string'length);
+	
+	chr <=	pre_string(chr_sel) when chr_sel < pre_string'length else
+			mem(chr_sel-pre_string'length) when chr_sel < (pre_string'length+cnt+1) else
+			post_string(chr_sel - (pre_string'length+cnt+1)) when chr_sel <= chr_max else x"55";
 	
 	absolute <= unsigned(abs(rawd));
 	int_part <= absolute(absolute'high-1 downto 1);
