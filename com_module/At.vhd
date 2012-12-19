@@ -34,10 +34,11 @@ Architecture Behavioral of At is
 	-- timer
 	signal timerEnable, timeOut : STD_LOGIC := '0';
 	signal counter : UNSIGNED(26 downTo 0) := "000000000000000000000000000";
-	constant timerVal : UNSIGNED(26 downTo 0) := baud_1;--"000000000000000000000000111";-- time out between control bytes
+	constant timerVal : UNSIGNED(26 downTo 0) := baud_1; -- time out between control bytes (1 sec)
 
-	-- state machines
-	type state_type is (WAIT_COMMAND, WAIT_GET, WAIT_SET, WAIT_EQUALS, SET_ELEM, GET_ELEM, GET_TEMP, WAIT_TEMP_CONVERT, WAIT_TEMP_DATA, WAIT_ELEM_DATA, WAIT_ELEM_HIGH, WAIT_ELEM_LOW, WAIT_ELEM_FIRST, SEND_WL, SEND_WH);
+	-- state machine
+	type state_type is (WAIT_COMMAND, WAIT_GET, WAIT_SET, WAIT_EQUALS, SET_ELEM, GET_ELEM, GET_TEMP, WAIT_TEMP_CONVERT, 
+			    WAIT_TEMP_DATA, WAIT_ELEM_DATA, WAIT_ELEM_HIGH, WAIT_ELEM_LOW, WAIT_ELEM_FIRST, SEND_WL, SEND_WH);
 	signal state : state_type := WAIT_COMMAND;
 	
 	-- 
@@ -56,18 +57,34 @@ begin
 	comp_bcdascii : entity work.bcdascii port map (clk => clk, reset => rst, rawd => tempDataIn, go => ascii_go,
 						       ready => ascii_ready, chr => ascii_chr, chr_max => ascii_chr_max, chr_sel => index);
 
+	-- fulhack
+	elemFormated(0) <= "01100101"; --e
+	elemFormated(1) <= "01101100"; --l
+	elemFormated(2) <= "01100101"; --e
+	elemFormated(3) <= "01101101"; --m
+	elemFormated(4) <= "01100101"; --e
+	elemFormated(5) <= "01101110"; --n
+	elemFormated(6) <= "01110100"; --t
+	elemFormated(7) <= "00111010"; --:
+	elemFormated(8) <= "00100000"; --
+	elemFormated(9) <= "0011000" & elBuf(0);
+	elemFormated(10) <= "0011000" & elbuf(1);
+	elemFormated(11) <= "0011000" & elbuf(2);
+	elemFormated(12) <= "0011000" & elbuf(3);
+	elemFormated(13) <= "00001101"; --cr
+	elemFormated(14) <= "00001010"; --lf
 
 
-
-	--*************************************************
+	--***********************************State machine process -------------
 	STATE_PROCESS : process (clk, rst)
 	begin
 		if (rst = '1') then
-			-- reset
+			state => WAIT_COMMAND;
 		elsif (rising_edge(clk)) then
 			timerEnable <= '0';
 
 			case state is 
+				-- Wait for command byte from UART
 				when WAIT_COMMAND =>
 					if (byteAvail = '1') then
 						if (byteIn = char2std('g')) then
@@ -77,6 +94,7 @@ begin
 						end if;
 					end if;
 					
+				-- wait for next control char, return to WAIT_COMMAND on timeout
 				when WAIT_GET =>
 					timerEnable <= '1';
 					if (timeOut = '1') then
@@ -89,6 +107,7 @@ begin
 						end if;
 					end if;
 
+				-- wait for set command.
 				when WAIT_SET =>
 					timerEnable <= '1';
 					if (timeOut = '1') then
@@ -99,6 +118,7 @@ begin
 						end if;
 					end if;
 
+				-- wait for equals sign
 				when WAIT_EQUALS =>
 					timerEnable <= '0';
 					if (timeOut = '1') then
@@ -109,16 +129,19 @@ begin
 						end if;
 					end if;
 
+				-- state added to avoid equals sign to be counted as data
 				when WAIT_ELEM_FIRST =>
 					if (byteAvail = '0') then
 						state <= WAIT_ELEM_HIGH;
 					end if;
 
+				-- wait to received byte
 				when WAIT_ELEM_HIGH =>
 					if (byteAvail = '1') then
 						state <= WAIT_ELEM_LOW;
 					end if;
-					
+				
+				-- wait while byte is being received
 				when WAIT_ELEM_LOW =>
 					if (elemCount = 3) then
 						state <= SET_ELEM;
@@ -126,12 +149,15 @@ begin
 						state <= WAIT_ELEM_HIGH;
 					end if;
 
+				-- set the element control signal then go back
 				when SET_ELEM =>
 					state <= WAIT_COMMAND;
 
+				-- send get element control signal then go to WAIT_FOR_DATA
 				when GET_ELEM =>
 					state <= WAIT_ELEM_DATA;
 
+				-- send get temp control signal then go to WAIT_FOR_DATA
 				when GET_TEMP =>
 					state <= WAIT_TEMP_DATA;
 
@@ -165,7 +191,7 @@ begin
 		end if;
 	end process;
 
--- ******************** Receive outsignals ***********************************
+-- ******************** Outsignal processes ***********************************
 	OUTSIGNAL_PROCESS : process (clk, rst)
 
 	begin
@@ -248,6 +274,7 @@ begin
 		end if;
 	end process;
 
+	-- Timer process. Indirectly sets the timeOut high when counter = timerVal.
 	TIMER_P : process (clk)
 	begin
 		if (rising_edge(clk)) then		
