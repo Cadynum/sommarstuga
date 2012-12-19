@@ -3,6 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.Defs.char_array;
 use work.Defs.asciichr;
+use work.bcdascii_p.all;
 
 entity bcdascii_test is
 end entity;
@@ -13,12 +14,12 @@ architecture a of bcdascii_test is
 	signal ready : std_ulogic;
 	signal go : std_ulogic;
 	signal rawd : signed(7 downto 0) := "10000000";
-	signal mem : char_array(0 to 5);
-	signal mem_len : integer range 0 to 5;
+	signal mem : char_array(0 to 100);
+	signal mem_len : bcdbuf_t;
 	signal chr : asciichr;
-	signal chr_max : integer range 0 to 5;
-	signal chr_sel : integer range 0 to 5;
-	
+	signal chr_max : bcdbuf_t;
+	signal chr_sel : bcdbuf_t;
+
 	function caToString (din : char_array; len : natural) return string is
 		variable dout : string(1 to len);
 	begin
@@ -28,11 +29,11 @@ architecture a of bcdascii_test is
 		return dout;
 	end function;
 begin
-	module : entity work.bcdascii port map (clk, reset, go, ready, rawd, 
+	module : entity work.bcdascii port map (clk, reset, go, ready, rawd,
 		chr, chr_sel, chr_max);
-	
+
 	process is
-		variable testcnt : integer := 0;		
+		variable testcnt : integer := 0;
 	begin
 		wait until reset = '0';
 		for i in 0 to 255 loop
@@ -40,21 +41,21 @@ begin
 			wait until rising_edge(clk);
 			go <= '0';
 			wait until ready = '1';
-			
-			for jj in 0 to 5 loop
+
+			for jj in 0 to chr_max loop
 				chr_sel <= jj;
 				wait until clk'event;
 				mem(jj) <= chr;
 			end loop;
-			report caToString(mem, chr_max+1);
-			
+			report integer'image(chr_max) & caToString(mem, chr_max+1);
+
 			rawd <= rawd + 1;
 			wait for 50 ns;
 		end loop;
-		report "NONE. End of simulation." severity failure;		
+		report "NONE. End of simulation." severity failure;
 	end process;
-		
-		
+
+
 
 	-- 100Mhz clock
 	clk <= not clk after 5 ns;
