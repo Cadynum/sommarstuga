@@ -1,9 +1,21 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use work.bcd.all;
 use work.Defs.char_array;
 use work.Defs.asciichr;
+
+package bcdascii_p is
+	subtype bcdbuf_t is integer range 0 to 31;
+
+end package;
+	
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use work.bcd.all;
+use work.Defs.all;
+use work.bcdascii_p.all;
 
 entity bcdascii is
 	port	( clk, reset : in std_ulogic
@@ -11,8 +23,8 @@ entity bcdascii is
 			; ready : buffer std_ulogic
 			; rawd : in signed(7 downto 0)
 			; chr : buffer asciichr
-			; chr_sel : in integer range 0 to 5
-			; chr_max : buffer integer range 0 to 5
+			; chr_sel : in bcdbuf_t
+			; chr_max : buffer bcdbuf_t
 			);
 end entity;
 
@@ -33,14 +45,12 @@ architecture a of bcdascii is
 	signal int_part : unsigned(rawd'high-2 downto 0);
 	signal fract_part : std_ulogic;
 	
-	function chr2vec (c : character) return asciichr is
-	begin
-		return asciichr(to_unsigned(character'pos(c), 8));
-	end function;
-
+	constant pre_string : char_array := str2ca("Temperatur: ");
+	constant post_string : char_array := str2ca("C\r\n");
+	
 begin
-	chr_max <= cnt;
-	chr <= mem(chr_sel);
+	chr_max <= pre_string'length + cnt + post_string'length;
+	chr <= mem(chr_sel-pre_string'length);
 	
 	absolute <= unsigned(abs(rawd));
 	int_part <= absolute(absolute'high-1 downto 1);
