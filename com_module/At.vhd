@@ -1,6 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
+use work.bcdascii_p.all;
 
 library WORK;
 use WORK.DEFS.ALL;
@@ -33,15 +34,13 @@ Architecture Behavioral of At is
 	-- timer
 	signal timerEnable, timeOut : STD_LOGIC := '0';
 	signal counter : UNSIGNED(26 downTo 0) := "000000000000000000000000000";
-	constant timerVal : UNSIGNED(26 downTo 0) := baud_1;--"000000000000000000000000111";-- time out between bytes
+	constant timerVal : UNSIGNED(26 downTo 0) := baud_1;--"000000000000000000000000111";-- time out between control bytes
 
 	-- state machines
 	type state_type is (WAIT_COMMAND, WAIT_GET, WAIT_SET, WAIT_EQUALS, SET_ELEM, GET_ELEM, GET_TEMP, WAIT_TEMP_CONVERT, WAIT_TEMP_DATA, WAIT_ELEM_DATA, WAIT_ELEM_HIGH, WAIT_ELEM_LOW, WAIT_ELEM_FIRST, SEND_WL, SEND_WH);
 	signal state : state_type := WAIT_COMMAND;
 	
 	-- 
-	constant testString : CHARACTER_ARRAY := "123456789";
-	constant testAscii : CHAR_ARRAY := (x"31",x"32", x"33", x"34", x"35");
 	signal index, toIndex: integer range 0 to 5 := 0;
 	signal elemCount : integer range 0 to 3 := 0;
 	signal isTemp : boolean := true;
@@ -51,8 +50,10 @@ Architecture Behavioral of At is
 
 	signal ascii_go, ascii_ready : std_ulogic;
 	signal ascii_chr : asciichr;
-	signal ascii_chr_max : integer range 0 to 5;
---	signal ascii_chr_sel : integer range 0 to 5;
+	signal ascii_chr_max : bcdbuf_t;
+
+
+	--constant elemPrefix : character_array := "Element (1,2,3,4) on/off: ";
 begin
 	comp_bcdascii : entity work.bcdascii port map (clk => clk, reset => rst, rawd => tempDataIn, go => ascii_go,
 						       ready => ascii_ready, chr => ascii_chr, chr_max => ascii_chr_max, chr_sel => index);
@@ -222,9 +223,6 @@ begin
 						elBuf <= elementDataIn;
 						isTemp <= false;
 						toIndex <= elBuf'high;
---						byteOut <= string_to_vector("elem:") & elementDataIn;
---						byteOut <= '0' & '0' & '0' & '0' & elementDataIn;
-						
 					end if;
 
 				when SEND_WL =>
@@ -239,13 +237,12 @@ begin
 					sendByte <= '1';
 						if (isTemp) then
 								byteOut <= ascii_chr;
---								ascii_chr_sel <= index;
 						else
 							byteOut <= "0011000" & elBuf(index);
 						end if;
 					end if;
 				when others =>
-					--do nothing
+					--shouldn't be reached
 			end case;
 		end if;
 	end process;
