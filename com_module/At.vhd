@@ -41,7 +41,7 @@ Architecture Behavioral of At is
 	signal state : state_type := WAIT_COMMAND;
 	
 	-- 
-	signal index, toIndex: integer range 0 to 5 := 0;
+	signal index, toIndex: bcdbuf_t := 0;
 	signal elemCount : integer range 0 to 3 := 0;
 	signal isTemp : boolean := true;
 
@@ -51,12 +51,27 @@ Architecture Behavioral of At is
 	signal ascii_go, ascii_ready : std_ulogic;
 	signal ascii_chr : asciichr;
 	signal ascii_chr_max : bcdbuf_t;
-
-
-	--constant elemPrefix : character_array := "Element (1,2,3,4) on/off: ";
+	signal elemFormated : char_array (14 downTo 0);
 begin
 	comp_bcdascii : entity work.bcdascii port map (clk => clk, reset => rst, rawd => tempDataIn, go => ascii_go,
 						       ready => ascii_ready, chr => ascii_chr, chr_max => ascii_chr_max, chr_sel => index);
+
+	elemFormated(0) <= "01100101"; --e
+	elemFormated(1) <= "01101100"; --l
+	elemFormated(2) <= "01100101"; --e
+	elemFormated(3) <= "01101101"; --m
+	elemFormated(4) <= "01100101"; --e
+	elemFormated(5) <= "01101110"; --n
+	elemFormated(6) <= "01110100"; --t
+	elemFormated(7) <= "00111010"; --:
+	elemFormated(8) <= "00100000"; --
+	elemFormated(9) <= "0011000" & elBuf(0);
+	elemFormated(10) <= "0011000" & elbuf(1);
+	elemFormated(11) <= "0011000" & elbuf(2);
+	elemFormated(12) <= "0011000" & elbuf(3);
+	elemFormated(13) <= "00001101"; --cr
+	elemFormated(14) <= "00001010"; --lf
+
 
 	--*************************************************
 	STATE_PROCESS : process (clk, rst)
@@ -222,7 +237,7 @@ begin
 					if (elementInAvail = '1') then
 						elBuf <= elementDataIn;
 						isTemp <= false;
-						toIndex <= elBuf'high;
+						toIndex <= 15;
 					end if;
 
 				when SEND_WL =>
@@ -236,9 +251,9 @@ begin
 					if (sendReady = '1') then
 					sendByte <= '1';
 						if (isTemp) then
-								byteOut <= ascii_chr;
+							byteOut <= ascii_chr;
 						else
-							byteOut <= "0011000" & elBuf(index);
+							byteOut <= elemFormated(index);
 						end if;
 					end if;
 				when others =>
