@@ -372,14 +372,19 @@ Prototypen avslutar med att skicka en status rapport till avsändaren av sms:et.
 
 \clearpage
 \section{Kretsschema}
-	\begin{figure}[H]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.88\textheight, angle=90]{kretsschema.eps}
 	\caption{Förenklat kretsschema, över de komponenter som används, baserat på Digilents kretsschema för Nexys3.}
 \end{figure}
 
-%\clearpage
-%\section{Syntesschema}
+\clearpage
+\section{Syntesschema}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{syntesSchema-crop.pdf}
+	\caption{Genererat synteschema över hela prototypen}
+\end{figure}
 
 \clearpage
 \section{Komponentlista}
@@ -475,7 +480,7 @@ https://github.com/Cadynum/sommarstuga.git
 	\item Lött den korrekta DS18S20-konstruktionen på ett mönsterkort.
 	\item Visning av ett binärt tal på FPGA:ns 7-segmentdisplay.
 	\item Testning och verifikation av DS18S20 kontrollen.
-	\item Binär till BCD konverterare.
+	\item Utskriften av temperatur via UART (``Temperatur: 31C'').
 	\item Felanalys-delen i rapporten
 	\item Allt i rapporten som relaterar till temperatursensorn DS18S20 och 7-segmentdisplayen.
 	\item Följande VHDL-moduler:
