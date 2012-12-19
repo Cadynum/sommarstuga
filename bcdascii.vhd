@@ -46,7 +46,7 @@ architecture a of bcdascii is
 	signal fract_part : std_ulogic;
 
 	constant pre_string : char_array := str2ca("Temperatur: "); --12chars
-	constant post_string : char_array := str2ca("C") & x"0D" & x"0A"; --3chars
+	constant post_string : char_array := str2ca(('C', cr, lf)); --3chars
 
 begin
 

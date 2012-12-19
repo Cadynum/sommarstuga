@@ -47,7 +47,7 @@ begin
 				wait until clk'event;
 				mem(jj) <= chr;
 			end loop;
-			report caToString(mem, chr_max+1);
+			report integer'image(chr_max) & caToString(mem, chr_max+1);
 
 			rawd <= rawd + 1;
 			wait for 50 ns;
