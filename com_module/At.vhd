@@ -56,21 +56,7 @@ begin
 	comp_bcdascii : entity work.bcdascii port map (clk => clk, reset => rst, rawd => tempDataIn, go => ascii_go,
 						       ready => ascii_ready, chr => ascii_chr, chr_max => ascii_chr_max, chr_sel => index);
 
-	elemFormated(0) <= "01100101"; --e
-	elemFormated(1) <= "01101100"; --l
-	elemFormated(2) <= "01100101"; --e
-	elemFormated(3) <= "01101101"; --m
-	elemFormated(4) <= "01100101"; --e
-	elemFormated(5) <= "01101110"; --n
-	elemFormated(6) <= "01110100"; --t
-	elemFormated(7) <= "00111010"; --:
-	elemFormated(8) <= "00100000"; --
-	elemFormated(9) <= "0011000" & elBuf(0);
-	elemFormated(10) <= "0011000" & elbuf(1);
-	elemFormated(11) <= "0011000" & elbuf(2);
-	elemFormated(12) <= "0011000" & elbuf(3);
-	elemFormated(13) <= "00001101"; --cr
-	elemFormated(14) <= "00001010"; --lf
+
 
 
 	--*************************************************
